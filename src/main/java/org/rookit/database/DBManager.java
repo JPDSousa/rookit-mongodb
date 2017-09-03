@@ -41,12 +41,8 @@ public interface DBManager extends Closeable{
 	String ARTISTS = "Artists";
 	String ALBUMS = "Albums";
 	String TRACKS = "Tracks";
-	String TRACKPATHS = "Track_paths";
 	
 	String IGNORED = "Ignored";
-	
-	String SERVICES = "Services";
-	
 	
 	void reset();
 	
