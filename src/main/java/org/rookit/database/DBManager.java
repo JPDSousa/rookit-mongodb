@@ -30,6 +30,7 @@ import org.rookit.database.queries.TrackQuery;
 import org.rookit.dm.album.Album;
 import org.rookit.dm.artist.Artist;
 import org.rookit.dm.genre.Genre;
+import org.rookit.dm.parser.IgnoreField;
 import org.rookit.dm.track.Track;
 
 @SuppressWarnings("javadoc")
@@ -53,6 +54,7 @@ public interface DBManager extends Closeable{
 	void create();
 	void clear();
 
+	void updateIgnored(IgnoreField value);
 	void addAlbum(Album album);
 	void addGenre(Genre genre);
 	void addTrack(Track track);
@@ -68,6 +70,8 @@ public interface DBManager extends Closeable{
 	TrackQuery getTracks();
 	AlbumQuery getAlbums();
 
+	int getIgnoredOccurrences(String value);
+	
 	@Override
 	boolean equals(Object object);
 	

@@ -33,6 +33,7 @@ import org.rookit.dm.artist.Artist;
 import org.rookit.dm.artist.ArtistFactory;
 import org.rookit.dm.genre.Genre;
 import org.rookit.dm.genre.GenreFactory;
+import org.rookit.dm.parser.IgnoreField;
 import org.rookit.dm.track.Track;
 import org.rookit.dm.track.TrackFactory;
 import org.smof.collection.CollectionOptions;
@@ -41,19 +42,19 @@ import org.smof.collection.SmofQuery;
 import org.smof.exception.SmofException;
 
 @SuppressWarnings("javadoc")
-public class DBManagerImpl implements DBManager{
+public class NoSQLDBManager implements DBManager{
 
 	public static final String HOST = "localhost";
 	public static final int PORT = 27017;
 
 	private final Smof smof;
 
-	public DBManagerImpl() {
+	public NoSQLDBManager() {
 //		this(DB_NAME);
 		this("test");
 	}
 
-	public DBManagerImpl(String databaseName) {
+	public NoSQLDBManager(String databaseName) {
 		smof = Smof.create(HOST, PORT, databaseName);
 	}
 
@@ -69,8 +70,14 @@ public class DBManagerImpl implements DBManager{
 		smof.loadCollection(ALBUMS, Album.class, AlbumFactory.getDefault(), getAlbumOptions());
 		smof.loadCollection(ARTISTS, Artist.class, ArtistFactory.getDefault(), getArtistOptions());
 		smof.loadCollection(GENRES, Genre.class, GenreFactory.getDefault(), getGenresOptions());
+		smof.loadCollection(IGNORED, IgnoreField.class, getIngoredOptions());
 	}
 	
+	private CollectionOptions<IgnoreField> getIngoredOptions() {
+		final CollectionOptions<IgnoreField> options = CollectionOptions.create();
+		return options;
+	}
+
 	private CollectionOptions<Genre> getGenresOptions() {
 		final CollectionOptions<Genre> options = CollectionOptions.create();
 		return options;
@@ -97,6 +104,7 @@ public class DBManagerImpl implements DBManager{
 		smof.createCollection(ALBUMS, Album.class, AlbumFactory.getDefault());
 		smof.createCollection(ARTISTS, Artist.class, ArtistFactory.getDefault());
 		smof.createCollection(GENRES, Genre.class, GenreFactory.getDefault());
+		smof.createCollection(IGNORED, IgnoreField.class);
 	}
 
 	@Override
@@ -197,26 +205,26 @@ public class DBManagerImpl implements DBManager{
 		return new AlbumQuery(albumQuery);
 	}
 
-//	@Override
-//	public void updateIgnored(IgnoreField value) {
-//		smof.update(IgnoreField.class)
-//		.setUpsert(true)
-//		.increase(value.getOccurrences(), IgnoreField.OCCURRENCES)
-//		.where()
-//		.fieldEq(IgnoreField.VALUE, value.getValue())
-//		.execute();
-//	}
+	@Override
+	public void updateIgnored(IgnoreField value) {
+		smof.update(IgnoreField.class)
+		.setUpsert(true)
+		.increase(value.getOccurrences(), IgnoreField.OCCURRENCES)
+		.where()
+		.fieldEq(IgnoreField.VALUE, value.getValue())
+		.execute();
+	}
 
-//	@Override
-//	public int getIgnoredOccurrences(String value) {
-//		final SmofQuery<IgnoreField> query = smof.find(IgnoreField.class);
-//		query.withField(IgnoreField.VALUE, value.toLowerCase());
-//		final IgnoreField result = query.results().first();
-//		if(result == null) {
-//			return 0;
-//		}
-//		return result.getOccurrences();
-//	}
+	@Override
+	public int getIgnoredOccurrences(String value) {
+		final SmofQuery<IgnoreField> query = smof.find(IgnoreField.class);
+		query.withField(IgnoreField.VALUE, value.toLowerCase());
+		final IgnoreField result = query.results().first();
+		if(result == null) {
+			return 0;
+		}
+		return result.getOccurrences();
+	}
 
 	@Override
 	public void close() throws IOException {
