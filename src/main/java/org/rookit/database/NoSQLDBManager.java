@@ -109,12 +109,10 @@ class NoSQLDBManager implements DBManager{
 	@Override
 	public void clear() {
 		smof.dropCollection(TRACKS);
-		smof.dropCollection(TRACKPATHS);
 		smof.dropCollection(ALBUMS);
 		smof.dropCollection(ARTISTS);
 		smof.dropCollection(GENRES);
 		smof.dropCollection(IGNORED);
-		smof.dropCollection(SERVICES);
 	}
 
 	@Override
