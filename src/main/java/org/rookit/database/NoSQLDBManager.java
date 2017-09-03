@@ -41,8 +41,7 @@ import org.smof.collection.Smof;
 import org.smof.collection.SmofQuery;
 import org.smof.exception.SmofException;
 
-@SuppressWarnings("javadoc")
-public class NoSQLDBManager implements DBManager{
+class NoSQLDBManager implements DBManager{
 
 	public static final String HOST = "localhost";
 	public static final int PORT = 27017;
