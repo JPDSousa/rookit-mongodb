@@ -41,19 +41,19 @@ import org.smof.collection.Smof;
 import org.smof.collection.SmofQuery;
 import org.smof.exception.SmofException;
 
-class NoSQLDBManager implements DBManager{
+class DBManagerImpl implements DBManager{
 
 	public static final String HOST = "localhost";
 	public static final int PORT = 27017;
 
 	private final Smof smof;
 
-	public NoSQLDBManager() {
+	public DBManagerImpl() {
 //		this(DB_NAME);
 		this("test");
 	}
 
-	public NoSQLDBManager(String databaseName) {
+	public DBManagerImpl(String databaseName) {
 		smof = Smof.create(HOST, PORT, databaseName);
 	}
 
