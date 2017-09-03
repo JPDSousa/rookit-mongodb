@@ -36,7 +36,18 @@ import org.rookit.dm.track.Track;
 @SuppressWarnings("javadoc")
 public interface DBManager extends Closeable{
 	
-	String DB_NAME = "AnalyzeDB";
+	String HOST = "localhost";
+	int PORT = 27017;
+	String DB_NAME = "rookit";
+	
+	static DBManager open(String host, int port, String dbName) {
+		return new DBManagerImpl(host, port, dbName);
+	}
+	
+	static DBManager open() {
+		return open(HOST, PORT, DB_NAME);
+	}
+	
 	String GENRES = "Genres";
 	String ARTISTS = "Artists";
 	String ALBUMS = "Albums";

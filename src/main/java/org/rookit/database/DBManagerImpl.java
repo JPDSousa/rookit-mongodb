@@ -43,18 +43,10 @@ import org.smof.exception.SmofException;
 
 class DBManagerImpl implements DBManager{
 
-	public static final String HOST = "localhost";
-	public static final int PORT = 27017;
-
 	private final Smof smof;
 
-	public DBManagerImpl() {
-//		this(DB_NAME);
-		this("test");
-	}
-
-	public DBManagerImpl(String databaseName) {
-		smof = Smof.create(HOST, PORT, databaseName);
+	DBManagerImpl(String host, int port, String databaseName) {
+		smof = Smof.create(host, port, databaseName);
 	}
 
 	@Override
