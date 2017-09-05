@@ -22,6 +22,7 @@
 package org.rookit.database;
 
 import java.io.Closeable;
+import java.io.InputStream;
 
 import org.rookit.database.queries.AlbumQuery;
 import org.rookit.database.queries.ArtistQuery;
@@ -32,6 +33,7 @@ import org.rookit.dm.artist.Artist;
 import org.rookit.dm.genre.Genre;
 import org.rookit.dm.parser.IgnoreField;
 import org.rookit.dm.track.Track;
+import org.smof.gridfs.SmofGridRef;
 
 @SuppressWarnings("javadoc")
 public interface DBManager extends Closeable{
@@ -61,6 +63,8 @@ public interface DBManager extends Closeable{
 	void clear();
 	
 	void loadBucket(String bucketName);
+	byte[] download(SmofGridRef ref);
+	InputStream stream(SmofGridRef ref);
 
 	void addAlbum(Album album);
 	void addGenre(Genre genre);

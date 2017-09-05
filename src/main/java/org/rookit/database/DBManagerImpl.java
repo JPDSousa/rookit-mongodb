@@ -22,7 +22,9 @@
 package org.rookit.database;
 
 import java.io.IOException;
+import java.io.InputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.rookit.database.queries.AlbumQuery;
 import org.rookit.database.queries.ArtistQuery;
 import org.rookit.database.queries.GenreQuery;
@@ -40,8 +42,13 @@ import org.smof.collection.CollectionOptions;
 import org.smof.collection.Smof;
 import org.smof.collection.SmofQuery;
 import org.smof.exception.SmofException;
+import org.smof.gridfs.SmofGridRef;
+
+import utils.DatabaseValidator;
 
 class DBManagerImpl implements DBManager{
+	
+	private static final DatabaseValidator VALIDATOR = DatabaseValidator.getDefault();
 
 	private final Smof smof;
 
@@ -211,5 +218,20 @@ class DBManagerImpl implements DBManager{
 	@Override
 	public void close() throws IOException {
 		this.smof.close();
+	}
+
+	@Override
+	public byte[] download(SmofGridRef ref) {
+		try {
+			return IOUtils.toByteArray(stream(ref));
+		} catch (IOException e) {
+			VALIDATOR.handleIOException(e);
+			return null;
+		}
+	}
+
+	@Override
+	public InputStream stream(SmofGridRef ref) {
+		return smof.getGridStreamManager().download(ref);
 	}
 }
