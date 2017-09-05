@@ -90,21 +90,14 @@ class DBManagerImpl implements DBManager{
 	}
 
 	@Override
-	public void create() {
-		smof.createCollection(TRACKS, Track.class, TrackFactory.getDefault());
-		smof.createCollection(ALBUMS, Album.class, AlbumFactory.getDefault());
-		smof.createCollection(ARTISTS, Artist.class, ArtistFactory.getDefault());
-		smof.createCollection(GENRES, Genre.class, GenreFactory.getDefault());
-		smof.createCollection(IGNORED, IgnoreField.class);
+	public void clear() {
+		smof.dropAllCollections();
+		smof.dropAllBuckets();
 	}
 
 	@Override
-	public void clear() {
-		smof.dropCollection(TRACKS);
-		smof.dropCollection(ALBUMS);
-		smof.dropCollection(ARTISTS);
-		smof.dropCollection(GENRES);
-		smof.dropCollection(IGNORED);
+	public void loadBucket(String bucketName) {
+		smof.loadBucket(bucketName);
 	}
 
 	@Override

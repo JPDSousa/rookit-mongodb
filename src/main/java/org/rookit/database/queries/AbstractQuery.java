@@ -46,5 +46,9 @@ abstract class AbstractQuery<T extends Element> {
 	public T first() {
 		return query.results().first();
 	}
+	
+	public T byElement(T element) {
+		return query.byElement(element);
+	}
 
 }

@@ -58,10 +58,10 @@ public interface DBManager extends Closeable{
 	void reset();
 	
 	void init();
-	void create();
 	void clear();
+	
+	void loadBucket(String bucketName);
 
-	void updateIgnored(IgnoreField value);
 	void addAlbum(Album album);
 	void addGenre(Genre genre);
 	void addTrack(Track track);
@@ -71,6 +71,7 @@ public interface DBManager extends Closeable{
 	void updateGenre(Genre genre);
 	void updateTrack(Track trak);
 	void updateArtist(Artist artist);
+	void updateIgnored(IgnoreField value);
 	
 	ArtistQuery getArtists();
 	GenreQuery getGenres();
