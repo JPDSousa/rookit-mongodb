@@ -78,21 +78,25 @@ class DBManagerImpl implements DBManager{
 
 	private CollectionOptions<Genre> getGenresOptions() {
 		final CollectionOptions<Genre> options = CollectionOptions.create();
+		options.upsert(true);
 		return options;
 	}
 
 	private CollectionOptions<Artist> getArtistOptions() {
 		final CollectionOptions<Artist> options = CollectionOptions.create();
+		options.upsert(true);
 		return options;
 	}
 
 	private CollectionOptions<Album> getAlbumOptions() {
 		final CollectionOptions<Album> options = CollectionOptions.create();
+		options.upsert(true);
 		return options;
 	}
 
 	private CollectionOptions<Track> getTrackOptions() {
 		final CollectionOptions<Track> options = CollectionOptions.create();
+		options.upsert(false);
 		return options;
 	}
 
