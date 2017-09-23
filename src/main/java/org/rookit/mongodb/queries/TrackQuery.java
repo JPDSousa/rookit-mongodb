@@ -19,26 +19,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package org.rookit.database.queries;
+package org.rookit.mongodb.queries;
 
-import org.rookit.dm.artist.Artist;
+import org.rookit.dm.track.Track;
 import org.smof.collection.SmofQuery;
 
-import static org.rookit.dm.artist.DatabaseFields.*;
-
 @SuppressWarnings("javadoc")
-public class ArtistQuery extends AbstractQuery<Artist>{
-
+public class TrackQuery extends AbstractQuery<Track> {
 	
-	public ArtistQuery(SmofQuery<Artist> query) {
+	public TrackQuery(SmofQuery<Track> query) {
 		super(query);
 	}
-
-	public ArtistQuery withName(String artistName) {
-		query.withField(NAME, artistName);
-		return this;
-	}
 	
 	
-
 }

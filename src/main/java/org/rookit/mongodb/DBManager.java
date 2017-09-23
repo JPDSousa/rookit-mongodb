@@ -19,20 +19,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package org.rookit.database;
+package org.rookit.mongodb;
 
 import java.io.Closeable;
 import java.io.InputStream;
 
-import org.rookit.database.queries.AlbumQuery;
-import org.rookit.database.queries.ArtistQuery;
-import org.rookit.database.queries.GenreQuery;
-import org.rookit.database.queries.TrackQuery;
 import org.rookit.dm.album.Album;
 import org.rookit.dm.artist.Artist;
 import org.rookit.dm.genre.Genre;
 import org.rookit.dm.parser.IgnoreField;
 import org.rookit.dm.track.Track;
+import org.rookit.mongodb.queries.AlbumQuery;
+import org.rookit.mongodb.queries.ArtistQuery;
+import org.rookit.mongodb.queries.GenreQuery;
+import org.rookit.mongodb.queries.TrackQuery;
 import org.smof.gridfs.SmofGridRef;
 
 @SuppressWarnings("javadoc")
@@ -56,6 +56,8 @@ public interface DBManager extends Closeable{
 	String TRACKS = "Tracks";
 	
 	String IGNORED = "Ignored";
+	
+	String AUDIO = "audio";
 	
 	void reset();
 	

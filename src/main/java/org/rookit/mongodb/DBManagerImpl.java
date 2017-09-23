@@ -19,16 +19,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package org.rookit.database;
+package org.rookit.mongodb;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.rookit.database.queries.AlbumQuery;
-import org.rookit.database.queries.ArtistQuery;
-import org.rookit.database.queries.GenreQuery;
-import org.rookit.database.queries.TrackQuery;
 import org.rookit.dm.album.Album;
 import org.rookit.dm.album.AlbumFactory;
 import org.rookit.dm.artist.Artist;
@@ -38,13 +34,16 @@ import org.rookit.dm.genre.GenreFactory;
 import org.rookit.dm.parser.IgnoreField;
 import org.rookit.dm.track.Track;
 import org.rookit.dm.track.TrackFactory;
+import org.rookit.mongodb.queries.AlbumQuery;
+import org.rookit.mongodb.queries.ArtistQuery;
+import org.rookit.mongodb.queries.GenreQuery;
+import org.rookit.mongodb.queries.TrackQuery;
+import org.rookit.mongodb.utils.DatabaseValidator;
 import org.smof.collection.CollectionOptions;
 import org.smof.collection.Smof;
 import org.smof.collection.SmofQuery;
 import org.smof.exception.SmofException;
 import org.smof.gridfs.SmofGridRef;
-
-import utils.DatabaseValidator;
 
 class DBManagerImpl implements DBManager{
 	
@@ -69,6 +68,7 @@ class DBManagerImpl implements DBManager{
 		smof.loadCollection(ARTISTS, Artist.class, ArtistFactory.getDefault(), getArtistOptions());
 		smof.loadCollection(GENRES, Genre.class, GenreFactory.getDefault(), getGenresOptions());
 		smof.loadCollection(IGNORED, IgnoreField.class, getIngoredOptions());
+		smof.loadBucket(AUDIO);
 	}
 	
 	private CollectionOptions<IgnoreField> getIngoredOptions() {

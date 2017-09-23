@@ -1,4 +1,4 @@
-package utils;
+package org.rookit.mongodb.utils;
 
 import org.rookit.utils.log.Logs;
 import org.rookit.utils.log.Validator;

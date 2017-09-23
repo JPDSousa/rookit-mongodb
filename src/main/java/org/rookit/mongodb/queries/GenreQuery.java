@@ -19,36 +19,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package org.rookit.database.queries;
+package org.rookit.mongodb.queries;
 
-import java.util.stream.Stream;
-
+import org.rookit.dm.genre.Genre;
 import org.smof.collection.SmofQuery;
-import org.smof.element.Element;
 
-abstract class AbstractQuery<T extends Element> {
-	
-	protected final SmofQuery<T> query;
+import static org.rookit.dm.genre.DatabaseFields.*;
 
-	protected AbstractQuery(SmofQuery<T> query) {
-		super();
-		this.query = query;
+@SuppressWarnings("javadoc")
+public class GenreQuery extends AbstractQuery<Genre> {
+
+	public GenreQuery(SmofQuery<Genre> query) {
+		super(query);
 	}
 	
-	public Stream<T> stream() {
-		return query.results().stream();
+	public GenreQuery withName(String genreName) {
+		query.withField(NAME, genreName);
+		return this;
 	}
 	
-	public long count() {
-		return query.results().count();
-	}
-	
-	public T first() {
-		return query.results().first();
-	}
-	
-	public T byElement(T element) {
-		return query.byElement(element);
+	public GenreQuery withDescription(String description) {
+		query.withField(DESCRIPTION, description);
+		return this;
 	}
 
 }
