@@ -68,7 +68,7 @@ class DBManagerImpl implements DBManager{
 		smof.loadCollection(ARTISTS, Artist.class, ArtistFactory.getDefault(), getArtistOptions());
 		smof.loadCollection(GENRES, Genre.class, GenreFactory.getDefault(), getGenresOptions());
 		smof.loadCollection(IGNORED, IgnoreField.class, getIngoredOptions());
-		smof.loadBucket(AUDIO);
+		smof.loadBucket(Track.AUDIO);
 	}
 	
 	private CollectionOptions<IgnoreField> getIngoredOptions() {

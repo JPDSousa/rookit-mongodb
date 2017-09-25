@@ -57,8 +57,6 @@ public interface DBManager extends Closeable{
 	
 	String IGNORED = "Ignored";
 	
-	String AUDIO = "audio";
-	
 	void reset();
 	
 	void init();
