@@ -30,8 +30,6 @@ public class DbManagerTest {
 	private static final String HOST = "localhost";
 	private static final int PORT = 27020;
 	private static final String DB_NAME = "rookit_test";
-	private static final String PRE_BUCKET = "preBucket";
-	private static final String POS_BUCKET = "posBucket";
 	
 	private static DBManager guineaPig;
 	private static DMTestFactory factory;
@@ -50,8 +48,6 @@ public class DbManagerTest {
 	@Before
 	public final void beforeTest() {
 		guineaPig.init();
-		guineaPig.loadBucket(PRE_BUCKET);
-		guineaPig.loadBucket(POS_BUCKET);
 	}
 	
 	@After
@@ -65,7 +61,6 @@ public class DbManagerTest {
 		final Path path = TestResources.getRandomTrackPath();
 		final SmofGridRef dbRef = expected.getPath();
 		dbRef.attachFile(path);
-		dbRef.setBucketName(PRE_BUCKET);
 		guineaPig.addTrack(expected);
 		final Track actual = guineaPig.getTracks().byElement(expected);
 		assertEquals(expected, actual);
@@ -86,9 +81,7 @@ public class DbManagerTest {
 		final SmofGridRef dbRef1 = expected.getPath();
 		final SmofGridRef dbRef2 = expectedDup.getPath();
 		dbRef1.attachFile(paths.get(0));
-		dbRef1.setBucketName(POS_BUCKET);
 		dbRef2.attachFile(paths.get(1));
-		dbRef2.setBucketName(POS_BUCKET);
 		guineaPig.addTrack(expected);
 		guineaPig.addTrack(expectedDup);
 		assertEquals(1, guineaPig.getTracks().count());
@@ -103,11 +96,16 @@ public class DbManagerTest {
 	}
 	
 	@Test
-	public final void testAddAlbum() {
+	public final void testAddAlbum() throws IOException {
 		final Album expected = factory.getRandomAlbum();
+		final Path randomCoverPath = TestResources.getRandomCoverPath();
+		final byte[] expectedContent = Files.readAllBytes(randomCoverPath);
+		expected.getCover().attachFile(randomCoverPath);
 		guineaPig.addAlbum(expected);
 		final Album actual = guineaPig.getAlbums().byElement(expected);
+		final byte[] actualContent = guineaPig.download(actual.getCover());
 		assertEquals(expected, actual);
+		assertArrayEquals(expectedContent, actualContent);
 	}
 	
 	@Test
