@@ -28,6 +28,7 @@ import org.rookit.dm.album.Album;
 import org.rookit.dm.artist.Artist;
 import org.rookit.dm.genre.Genre;
 import org.rookit.dm.parser.IgnoreField;
+import org.rookit.dm.parser.TrackFormat;
 import org.rookit.dm.track.Track;
 import org.rookit.mongodb.queries.AlbumQuery;
 import org.rookit.mongodb.queries.ArtistQuery;
@@ -56,6 +57,7 @@ public interface DBManager extends Closeable{
 	String TRACKS = "Tracks";
 	
 	String IGNORED = "Ignored";
+	String TRACK_FORMATS = "TFormats";
 	
 	void reset();
 	
@@ -76,6 +78,7 @@ public interface DBManager extends Closeable{
 	void updateTrack(Track trak);
 	void updateArtist(Artist artist);
 	void updateIgnored(IgnoreField value);
+	void updateTrackFormat(TrackFormat value);
 	
 	ArtistQuery getArtists();
 	GenreQuery getGenres();
@@ -83,6 +86,7 @@ public interface DBManager extends Closeable{
 	AlbumQuery getAlbums();
 
 	int getIgnoredOccurrences(String value);
+	int getTrackFormatOccurrences(String value);
 	
 	@Override
 	boolean equals(Object object);

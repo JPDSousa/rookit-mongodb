@@ -32,6 +32,7 @@ import org.rookit.dm.artist.ArtistFactory;
 import org.rookit.dm.genre.Genre;
 import org.rookit.dm.genre.GenreFactory;
 import org.rookit.dm.parser.IgnoreField;
+import org.rookit.dm.parser.TrackFormat;
 import org.rookit.dm.track.Track;
 import org.rookit.dm.track.TrackFactory;
 import org.rookit.mongodb.queries.AlbumQuery;
@@ -68,8 +69,14 @@ class DBManagerImpl implements DBManager{
 		smof.loadCollection(ARTISTS, Artist.class, ArtistFactory.getDefault(), getArtistOptions());
 		smof.loadCollection(GENRES, Genre.class, GenreFactory.getDefault(), getGenresOptions());
 		smof.loadCollection(IGNORED, IgnoreField.class, getIngoredOptions());
+		smof.loadCollection(TRACK_FORMATS, TrackFormat.class, getTFormatOptions());
 		smof.loadBucket(Track.AUDIO);
 		smof.loadBucket(Album.COVER_BUCKET);
+	}
+	
+	private CollectionOptions<TrackFormat> getTFormatOptions() {
+		final CollectionOptions<TrackFormat> options = CollectionOptions.create();
+		return options;
 	}
 	
 	private CollectionOptions<IgnoreField> getIngoredOptions() {
@@ -218,6 +225,24 @@ class DBManagerImpl implements DBManager{
 			return 0;
 		}
 		return result.getOccurrences();
+	}
+
+	@Override
+	public void updateTrackFormat(TrackFormat value) {
+		smof.update(TrackFormat.class)
+		.setUpsert(true)
+		.increase(value.getOccurrences(), TrackFormat.OCCURRENCES)
+		.where()
+		.fieldEq(TrackFormat.VALUE, value.getValue())
+		.execute();
+	}
+
+	@Override
+	public int getTrackFormatOccurrences(String value) {
+		final TrackFormat result = smof.find(TrackFormat.class)
+				.withField(TrackFormat.VALUE, value.toLowerCase())
+				.results().first();
+		return result == null ? 0 : result.getOccurrences();
 	}
 
 	@Override
