@@ -24,11 +24,61 @@ package org.rookit.mongodb.queries;
 import org.rookit.dm.track.Track;
 import org.smof.collection.SmofQuery;
 
+import static org.rookit.dm.track.DatabaseFields.*;
+
+import org.bson.types.ObjectId;
+
 class TrackQueryImpl extends AbstractQuery<Track> implements TrackQuery {
 	
 	TrackQueryImpl(SmofQuery<Track> query) {
 		super(query);
 	}
-	
+
+	@Override
+	public TrackQuery withHiddenTrack(String hiddenTrack) {
+		query.withField(HIDDEN_TRACK, hiddenTrack);
+		return this;
+	}
+
+	@Override
+	public TrackQuery withTitle(String title) {
+		query.withField(TITLE, title);
+		return this;
+	}
+
+	@Override
+	public TrackQuery withVersionToken(String token) {
+		query.withField(VERSION_TOKEN, token);
+		return this;
+	}
+
+	@Override
+	public TrackQuery withBPM(int bpm) {
+		query.withField(BPM, bpm);
+		return this;
+	}
+
+	@Override
+	public TrackQuery withLyrics(String lyrics) {
+		query.withField(LYRICS, lyrics);
+		return this;
+	}
+
+	@Override
+	public TrackQuery withExplicitLyrics(boolean explicit) {
+		query.withField(EXPLICIT, explicit);
+		return this;
+	}
+
+	@Override
+	public TrackQuery withOriginal(Track track) {
+		return withOriginal(track.getId());
+	}
+
+	@Override
+	public TrackQuery withOriginal(ObjectId id) {
+		query.withField(ORIGINAL, id);
+		return this;
+	}
 	
 }
