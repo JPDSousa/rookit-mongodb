@@ -5,8 +5,8 @@ import org.rookit.dm.genre.Genre;
 @SuppressWarnings("javadoc")
 public interface GenreQuery extends RookitQuery<Genre> {
 
-	GenreQueryImpl withName(String genreName);
+	GenreQuery withName(String genreName);
 
-	GenreQueryImpl withDescription(String description);
+	GenreQuery withDescription(String description);
 
 }

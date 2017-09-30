@@ -33,13 +33,13 @@ class GenreQueryImpl extends AbstractQuery<Genre> implements GenreQuery {
 	}
 	
 	@Override
-	public GenreQueryImpl withName(String genreName) {
+	public GenreQuery withName(String genreName) {
 		query.withField(NAME, genreName);
 		return this;
 	}
 	
 	@Override
-	public GenreQueryImpl withDescription(String description) {
+	public GenreQuery withDescription(String description) {
 		query.withField(DESCRIPTION, description);
 		return this;
 	}
