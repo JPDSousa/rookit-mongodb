@@ -22,6 +22,9 @@
 package org.rookit.mongodb.queries;
 
 import org.rookit.dm.artist.Artist;
+import org.rookit.dm.artist.TypeArtist;
+import org.rookit.dm.artist.TypeGender;
+import org.rookit.dm.artist.TypeGroup;
 import org.smof.collection.SmofQuery;
 
 import static org.rookit.dm.artist.DatabaseFields.*;
@@ -33,8 +36,44 @@ class ArtistQueryImpl extends AbstractQuery<Artist> implements ArtistQuery{
 	}
 
 	@Override
-	public ArtistQueryImpl withName(String artistName) {
+	public ArtistQuery withName(String artistName) {
 		query.withField(NAME, artistName);
+		return this;
+	}
+
+	@Override
+	public ArtistQuery withArtistType(TypeArtist type) {
+		query.withField(TYPE, type);
+		return this;
+	}
+
+	@Override
+	public ArtistQuery withOrigin(String origin) {
+		query.withField(ORIGIN, origin);
+		return this;
+	}
+
+	@Override
+	public ArtistQuery withIPI(String ipi) {
+		query.withField(IPI, ipi);
+		return this;
+	}
+
+	@Override
+	public ArtistQuery withISNI(String isni) {
+		query.withField(ISNI, isni);
+		return this;
+	}
+
+	@Override
+	public ArtistQuery withGender(TypeGender gender) {
+		query.withField(GENDER, gender);
+		return this;
+	}
+
+	@Override
+	public ArtistQuery withGroupType(TypeGroup type) {
+		query.withField(GROUP_TYPE, type);
 		return this;
 	}
 	
