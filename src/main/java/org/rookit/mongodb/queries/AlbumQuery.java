@@ -22,6 +22,8 @@
 package org.rookit.mongodb.queries;
 
 import org.rookit.dm.album.Album;
+import org.rookit.dm.album.TypeAlbum;
+import org.rookit.dm.album.TypeRelease;
 import org.smof.collection.SmofQuery;
 
 import static org.rookit.dm.album.DatabaseFields.*;
@@ -32,9 +34,19 @@ public class AlbumQuery extends AbstractQuery<Album> {
 	public AlbumQuery(SmofQuery<Album> query) {
 		super(query);
 	}
-
+	
 	public AlbumQuery withTitle(String albumTitle) {
 		query.withField(TITLE, albumTitle);
+		return this;
+	}
+	
+	public AlbumQuery withType(TypeAlbum type) {
+		query.withField(TYPE, type);
+		return this;
+	}
+	
+	public AlbumQuery withReleaseType(TypeRelease type) {
+		query.withField(RELEASE_TYPE, type);
 		return this;
 	}
 

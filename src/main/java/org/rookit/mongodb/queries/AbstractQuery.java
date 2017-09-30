@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 import org.smof.collection.SmofQuery;
 import org.smof.element.Element;
 
-abstract class AbstractQuery<T extends Element> {
+abstract class AbstractQuery<T extends Element> implements RookitQuery<T> {
 	
 	protected final SmofQuery<T> query;
 
@@ -35,18 +35,23 @@ abstract class AbstractQuery<T extends Element> {
 		this.query = query;
 	}
 	
+	@Override
 	public Stream<T> stream() {
 		return query.results().stream();
 	}
 	
+	@Override
 	public long count() {
 		return query.results().count();
 	}
 	
+	
+	@Override
 	public T first() {
 		return query.results().first();
 	}
 	
+	@Override
 	public T byElement(T element) {
 		return query.byElement(element);
 	}
