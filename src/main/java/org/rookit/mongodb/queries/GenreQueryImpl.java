@@ -26,7 +26,9 @@ import org.smof.collection.ParentQuery;
 
 import static org.rookit.dm.genre.DatabaseFields.*;
 
-class GenreQueryImpl extends AbstractQuery<Genre> implements GenreQuery {
+import java.util.regex.Pattern;
+
+class GenreQueryImpl extends AbstractPlayableQuery<Genre, GenreQuery> implements GenreQuery {
 
 	public GenreQueryImpl(ParentQuery<Genre> query) {
 		super(query);
@@ -39,8 +41,20 @@ class GenreQueryImpl extends AbstractQuery<Genre> implements GenreQuery {
 	}
 	
 	@Override
+	public GenreQuery withName(Pattern regex) {
+		query.withFieldRegex(NAME, regex);
+		return this;
+	}
+
+	@Override
 	public GenreQuery withDescription(String description) {
 		query.withFieldEquals(DESCRIPTION, description);
+		return this;
+	}
+
+	@Override
+	public GenreQuery withDescription(Pattern regex) {
+		query.withFieldRegex(DESCRIPTION, regex);
 		return this;
 	}
 
