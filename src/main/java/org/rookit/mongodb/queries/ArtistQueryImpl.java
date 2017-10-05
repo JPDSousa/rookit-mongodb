@@ -22,6 +22,7 @@
 package org.rookit.mongodb.queries;
 
 import org.rookit.dm.artist.Artist;
+import org.rookit.dm.artist.Musician;
 import org.rookit.dm.artist.TypeArtist;
 import org.rookit.dm.artist.TypeGender;
 import org.rookit.dm.artist.TypeGroup;
@@ -29,10 +30,19 @@ import org.smof.collection.ParentQuery;
 
 import static org.rookit.dm.artist.DatabaseFields.*;
 
-class ArtistQueryImpl extends AbstractQuery<Artist> implements ArtistQuery{
+import java.time.LocalDate;
+import java.util.regex.Pattern;
+
+class ArtistQueryImpl extends AbstractGenreableQuery<Artist, ArtistQuery> implements ArtistQuery{
 
 	public ArtistQueryImpl(ParentQuery<Artist> query) {
 		super(query);
+	}
+
+	@Override
+	public ArtistQuery withArtistType(TypeArtist type) {
+		query.withFieldEquals(TYPE, type);
+		return this;
 	}
 
 	@Override
@@ -42,8 +52,26 @@ class ArtistQueryImpl extends AbstractQuery<Artist> implements ArtistQuery{
 	}
 
 	@Override
-	public ArtistQuery withArtistType(TypeArtist type) {
-		query.withFieldEquals(TYPE, type);
+	public ArtistQuery withName(Pattern regex) {
+		query.withFieldRegex(NAME, regex);
+		return this;
+	}
+
+	@Override
+	public ArtistQuery withFullName(String fullName) {
+		query.withFieldEquals(FULL_NAME, fullName);
+		return this;
+	}
+
+	@Override
+	public ArtistQuery withFullName(Pattern regex) {
+		query.withFieldRegex(FULL_NAME, regex);
+		return this;
+	}
+
+	@Override
+	public ArtistQuery relatedTo(Artist artist) {
+		query.withFieldEquals(RELATED, artist.getId());
 		return this;
 	}
 
@@ -74,6 +102,36 @@ class ArtistQueryImpl extends AbstractQuery<Artist> implements ArtistQuery{
 	@Override
 	public ArtistQuery withGroupType(TypeGroup type) {
 		query.withFieldEquals(GROUP_TYPE, type);
+		return this;
+	}
+
+	@Override
+	public ArtistQuery withAlias(String alias) {
+		query.withFieldEquals(ALIASES, alias);
+		return this;
+	}
+
+	@Override
+	public ArtistQuery withAlias(Pattern regex) {
+		query.withFieldRegex(ALIASES, regex);
+		return this;
+	}
+
+	@Override
+	public ArtistQuery withBeginDate(LocalDate date) {
+		query.withFieldEquals(BEGIN_DATE, date);
+		return this;
+	}
+
+	@Override
+	public ArtistQuery withEndDate(LocalDate date) {
+		query.withFieldEquals(END_DATE, date);
+		return this;
+	}
+
+	@Override
+	public ArtistQuery withMember(Musician member) {
+		query.withFieldEquals(MEMBERS, member.getId());
 		return this;
 	}
 	
