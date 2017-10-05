@@ -43,7 +43,6 @@ import org.rookit.mongodb.queries.TrackQuery;
 import org.rookit.mongodb.utils.DatabaseValidator;
 import org.smof.collection.CollectionOptions;
 import org.smof.collection.Smof;
-import org.smof.collection.SmofQuery;
 import org.smof.exception.SmofException;
 import org.smof.gridfs.SmofGridRef;
 
@@ -217,9 +216,10 @@ class DBManagerImpl implements DBManager{
 
 	@Override
 	public int getIgnoredOccurrences(String value) {
-		final SmofQuery<IgnoreField> query = smof.find(IgnoreField.class);
-		query.withField(IgnoreField.VALUE, value.toLowerCase());
-		final IgnoreField result = query.results().first();
+		final IgnoreField result = smof.find(IgnoreField.class)
+				.withFieldEquals(IgnoreField.VALUE, value.toLowerCase())
+				.results()
+				.first();
 		if(result == null) {
 			return 0;
 		}
@@ -239,7 +239,7 @@ class DBManagerImpl implements DBManager{
 	@Override
 	public int getTrackFormatOccurrences(String value) {
 		final TrackFormat result = smof.find(TrackFormat.class)
-				.withField(TrackFormat.VALUE, value.toLowerCase())
+				.withFieldEquals(TrackFormat.VALUE, value.toLowerCase())
 				.results().first();
 		return result == null ? 0 : result.getOccurrences();
 	}

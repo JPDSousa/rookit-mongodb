@@ -23,14 +23,14 @@ package org.rookit.mongodb.queries;
 
 import java.util.stream.Stream;
 
-import org.smof.collection.SmofQuery;
+import org.smof.collection.ParentQuery;
 import org.smof.element.Element;
 
 abstract class AbstractQuery<T extends Element> implements RookitQuery<T> {
 	
-	protected final SmofQuery<T> query;
+	protected final ParentQuery<T> query;
 
-	protected AbstractQuery(SmofQuery<T> query) {
+	protected AbstractQuery(ParentQuery<T> query) {
 		super();
 		this.query = query;
 	}

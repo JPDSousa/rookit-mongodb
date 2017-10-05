@@ -22,25 +22,25 @@
 package org.rookit.mongodb.queries;
 
 import org.rookit.dm.genre.Genre;
-import org.smof.collection.SmofQuery;
+import org.smof.collection.ParentQuery;
 
 import static org.rookit.dm.genre.DatabaseFields.*;
 
 class GenreQueryImpl extends AbstractQuery<Genre> implements GenreQuery {
 
-	public GenreQueryImpl(SmofQuery<Genre> query) {
+	public GenreQueryImpl(ParentQuery<Genre> query) {
 		super(query);
 	}
 	
 	@Override
 	public GenreQuery withName(String genreName) {
-		query.withField(NAME, genreName);
+		query.withFieldEquals(NAME, genreName);
 		return this;
 	}
 	
 	@Override
 	public GenreQuery withDescription(String description) {
-		query.withField(DESCRIPTION, description);
+		query.withFieldEquals(DESCRIPTION, description);
 		return this;
 	}
 

@@ -25,55 +25,55 @@ import org.rookit.dm.artist.Artist;
 import org.rookit.dm.artist.TypeArtist;
 import org.rookit.dm.artist.TypeGender;
 import org.rookit.dm.artist.TypeGroup;
-import org.smof.collection.SmofQuery;
+import org.smof.collection.ParentQuery;
 
 import static org.rookit.dm.artist.DatabaseFields.*;
 
 class ArtistQueryImpl extends AbstractQuery<Artist> implements ArtistQuery{
 
-	public ArtistQueryImpl(SmofQuery<Artist> query) {
+	public ArtistQueryImpl(ParentQuery<Artist> query) {
 		super(query);
 	}
 
 	@Override
 	public ArtistQuery withName(String artistName) {
-		query.withField(NAME, artistName);
+		query.withFieldEquals(NAME, artistName);
 		return this;
 	}
 
 	@Override
 	public ArtistQuery withArtistType(TypeArtist type) {
-		query.withField(TYPE, type);
+		query.withFieldEquals(TYPE, type);
 		return this;
 	}
 
 	@Override
 	public ArtistQuery withOrigin(String origin) {
-		query.withField(ORIGIN, origin);
+		query.withFieldEquals(ORIGIN, origin);
 		return this;
 	}
 
 	@Override
 	public ArtistQuery withIPI(String ipi) {
-		query.withField(IPI, ipi);
+		query.withFieldEquals(IPI, ipi);
 		return this;
 	}
 
 	@Override
 	public ArtistQuery withISNI(String isni) {
-		query.withField(ISNI, isni);
+		query.withFieldEquals(ISNI, isni);
 		return this;
 	}
 
 	@Override
 	public ArtistQuery withGender(TypeGender gender) {
-		query.withField(GENDER, gender);
+		query.withFieldEquals(GENDER, gender);
 		return this;
 	}
 
 	@Override
 	public ArtistQuery withGroupType(TypeGroup type) {
-		query.withField(GROUP_TYPE, type);
+		query.withFieldEquals(GROUP_TYPE, type);
 		return this;
 	}
 	

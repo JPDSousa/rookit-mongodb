@@ -4,7 +4,7 @@ import org.rookit.dm.album.Album;
 import org.rookit.dm.artist.Artist;
 import org.rookit.dm.genre.Genre;
 import org.rookit.dm.track.Track;
-import org.smof.collection.SmofQuery;
+import org.smof.collection.ParentQuery;
 
 @SuppressWarnings("javadoc")
 public class QueryFactory {
@@ -20,19 +20,19 @@ public class QueryFactory {
 	
 	private QueryFactory(){}
 	
-	public AlbumQuery createAlbumQuery(SmofQuery<Album> smofQuery) {
+	public AlbumQuery createAlbumQuery(ParentQuery<Album> smofQuery) {
 		return new AlbumQueryImpl(smofQuery);
 	}
 	
-	public ArtistQuery createArtistQuery(SmofQuery<Artist> smofQuery) {
+	public ArtistQuery createArtistQuery(ParentQuery<Artist> smofQuery) {
 		return new ArtistQueryImpl(smofQuery);
 	}
 	
-	public GenreQuery createGenreQuery(SmofQuery<Genre> smofQuery) {
+	public GenreQuery createGenreQuery(ParentQuery<Genre> smofQuery) {
 		return new GenreQueryImpl(smofQuery);
 	}
 	
-	public TrackQuery createTrackQuery(SmofQuery<Track> smofQuery) {
+	public TrackQuery createTrackQuery(ParentQuery<Track> smofQuery) {
 		return new TrackQueryImpl(smofQuery);
 	}
 
