@@ -21,46 +21,41 @@
  ******************************************************************************/
 package org.rookit.mongodb.queries;
 
-import java.util.Arrays;
-import java.util.stream.Stream;
-
+import org.rookit.dm.genre.Genre;
 import org.smof.collection.ParentQuery;
-import org.smof.element.Element;
 
-abstract class AbstractQuery<E extends Element> implements RookitQuery<E> {
+import static org.rookit.dm.genre.DatabaseFields.*;
 
-	protected static final boolean INCLUDE_BOUND = false;
-	
-	protected static <T extends Object> Object[] toObjectArray(T[] array) {
-		return Arrays.stream(array).map(t -> (Object) t).toArray();
-	}
-	
-	protected final ParentQuery<E> query;
+import java.util.regex.Pattern;
 
-	protected AbstractQuery(ParentQuery<E> query) {
-		super();
-		this.query = query;
+class GenreQueryImpl extends AbstractPlayableQuery<Genre, GenreQuery> implements GenreQuery {
+
+	public GenreQueryImpl(ParentQuery<Genre> query) {
+		super(query);
 	}
 	
 	@Override
-	public Stream<E> stream() {
-		return query.results().stream();
+	public GenreQuery withName(String genreName) {
+		query.withFieldEquals(NAME, genreName);
+		return this;
 	}
 	
 	@Override
-	public long count() {
-		return query.results().count();
+	public GenreQuery withName(Pattern regex) {
+		query.withFieldRegex(NAME, regex);
+		return this;
 	}
-	
-	
+
 	@Override
-	public E first() {
-		return query.results().first();
+	public GenreQuery withDescription(String description) {
+		query.withFieldEquals(DESCRIPTION, description);
+		return this;
 	}
-	
+
 	@Override
-	public E byElement(E element) {
-		return query.byElement(element);
+	public GenreQuery withDescription(Pattern regex) {
+		query.withFieldRegex(DESCRIPTION, regex);
+		return this;
 	}
 
 }

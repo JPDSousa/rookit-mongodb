@@ -38,11 +38,11 @@ import org.rookit.dm.track.TrackFactory;
 import org.rookit.mongodb.queries.AlbumQuery;
 import org.rookit.mongodb.queries.ArtistQuery;
 import org.rookit.mongodb.queries.GenreQuery;
+import org.rookit.mongodb.queries.QueryFactory;
 import org.rookit.mongodb.queries.TrackQuery;
 import org.rookit.mongodb.utils.DatabaseValidator;
 import org.smof.collection.CollectionOptions;
 import org.smof.collection.Smof;
-import org.smof.collection.SmofQuery;
 import org.smof.exception.SmofException;
 import org.smof.gridfs.SmofGridRef;
 
@@ -51,9 +51,11 @@ class DBManagerImpl implements DBManager{
 	private static final DatabaseValidator VALIDATOR = DatabaseValidator.getDefault();
 
 	private final Smof smof;
+	private final QueryFactory queryFactory;
 
 	DBManagerImpl(String host, int port, String databaseName) {
 		smof = Smof.create(host, port, databaseName);
+		this.queryFactory = QueryFactory.getDefault();
 	}
 
 	@Override
@@ -184,26 +186,22 @@ class DBManagerImpl implements DBManager{
 
 	@Override
 	public ArtistQuery getArtists() {
-		final SmofQuery<Artist> artistQuery = smof.find(Artist.class);
-		return new ArtistQuery(artistQuery);
+		return queryFactory.createArtistQuery(smof.find(Artist.class));
 	}
 
 	@Override
 	public GenreQuery getGenres() {
-		final SmofQuery<Genre> genreQuery = smof.find(Genre.class);
-		return new GenreQuery(genreQuery);
+		return queryFactory.createGenreQuery(smof.find(Genre.class));
 	}
 
 	@Override
 	public TrackQuery getTracks() {
-		final SmofQuery<Track> trackQuery = smof.find(Track.class);
-		return new TrackQuery(trackQuery);
+		return queryFactory.createTrackQuery(smof.find(Track.class));
 	}
 
 	@Override
 	public AlbumQuery getAlbums() {
-		final SmofQuery<Album> albumQuery = smof.find(Album.class);
-		return new AlbumQuery(albumQuery);
+		return queryFactory.createAlbumQuery(smof.find(Album.class));
 	}
 
 	@Override
@@ -218,9 +216,10 @@ class DBManagerImpl implements DBManager{
 
 	@Override
 	public int getIgnoredOccurrences(String value) {
-		final SmofQuery<IgnoreField> query = smof.find(IgnoreField.class);
-		query.withField(IgnoreField.VALUE, value.toLowerCase());
-		final IgnoreField result = query.results().first();
+		final IgnoreField result = smof.find(IgnoreField.class)
+				.withFieldEquals(IgnoreField.VALUE, value.toLowerCase())
+				.results()
+				.first();
 		if(result == null) {
 			return 0;
 		}
@@ -240,7 +239,7 @@ class DBManagerImpl implements DBManager{
 	@Override
 	public int getTrackFormatOccurrences(String value) {
 		final TrackFormat result = smof.find(TrackFormat.class)
-				.withField(TrackFormat.VALUE, value.toLowerCase())
+				.withFieldEquals(TrackFormat.VALUE, value.toLowerCase())
 				.results().first();
 		return result == null ? 0 : result.getOccurrences();
 	}

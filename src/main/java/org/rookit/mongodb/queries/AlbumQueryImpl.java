@@ -21,46 +21,63 @@
  ******************************************************************************/
 package org.rookit.mongodb.queries;
 
-import java.util.Arrays;
-import java.util.stream.Stream;
-
+import org.rookit.dm.album.Album;
+import org.rookit.dm.album.TypeAlbum;
+import org.rookit.dm.album.TypeRelease;
+import org.rookit.dm.artist.Artist;
 import org.smof.collection.ParentQuery;
-import org.smof.element.Element;
 
-abstract class AbstractQuery<E extends Element> implements RookitQuery<E> {
+import static org.rookit.dm.album.DatabaseFields.*;
 
-	protected static final boolean INCLUDE_BOUND = false;
-	
-	protected static <T extends Object> Object[] toObjectArray(T[] array) {
-		return Arrays.stream(array).map(t -> (Object) t).toArray();
-	}
-	
-	protected final ParentQuery<E> query;
+import java.time.LocalDate;
+import java.util.regex.Pattern;
 
-	protected AbstractQuery(ParentQuery<E> query) {
-		super();
-		this.query = query;
+class AlbumQueryImpl extends AbstractGenreableQuery<Album, AlbumQuery> implements AlbumQuery {
+
+	AlbumQueryImpl(ParentQuery<Album> query) {
+		super(query);
 	}
 	
 	@Override
-	public Stream<E> stream() {
-		return query.results().stream();
+	public AlbumQuery withTitle(String albumTitle) {
+		query.withFieldEquals(TITLE, albumTitle);
+		return this;
 	}
 	
 	@Override
-	public long count() {
-		return query.results().count();
+	public AlbumQuery withTitle(Pattern regex) {
+		query.withFieldRegex(TITLE, regex);
+		return this;
+	}
+
+	@Override
+	public AlbumQuery withType(TypeAlbum type) {
+		query.withFieldEquals(TYPE, type);
+		return this;
 	}
 	
-	
 	@Override
-	public E first() {
-		return query.results().first();
+	public AlbumQuery withReleaseType(TypeRelease type) {
+		query.withFieldEquals(RELEASE_TYPE, type);
+		return this;
 	}
-	
+
 	@Override
-	public E byElement(E element) {
-		return query.byElement(element);
+	public AlbumQuery withAnyReleaseType(TypeRelease[] types) {
+		query.withFieldIn(RELEASE_TYPE, toObjectArray(types));
+		return this;
+	}
+
+	@Override
+	public AlbumQuery withArtist(Artist artist) {
+		query.withFieldEquals(ARTISTS, artist.getId());
+		return this;
+	}
+
+	@Override
+	public AlbumQuery withReleaseDate(LocalDate date) {
+		query.withFieldEquals(RELEASE_DATE, date);
+		return this;
 	}
 
 }
