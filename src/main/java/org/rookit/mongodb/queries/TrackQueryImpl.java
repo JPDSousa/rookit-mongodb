@@ -21,14 +21,17 @@
  ******************************************************************************/
 package org.rookit.mongodb.queries;
 
+import org.rookit.dm.artist.Artist;
 import org.rookit.dm.track.Track;
 import org.smof.collection.ParentQuery;
 
 import static org.rookit.dm.track.DatabaseFields.*;
 
+import java.util.regex.Pattern;
+
 import org.bson.types.ObjectId;
 
-class TrackQueryImpl extends AbstractQuery<Track> implements TrackQuery {
+class TrackQueryImpl extends AbstractGenreableQuery<Track, TrackQuery> implements TrackQuery {
 	
 	TrackQueryImpl(ParentQuery<Track> query) {
 		super(query);
@@ -47,8 +50,44 @@ class TrackQueryImpl extends AbstractQuery<Track> implements TrackQuery {
 	}
 
 	@Override
-	public TrackQuery withVersionToken(String token) {
-		query.withFieldEquals(VERSION_TOKEN, token);
+	public TrackQuery withTitle(Pattern regex) {
+		query.withFieldRegex(TITLE, regex);
+		return this;
+	}
+
+	@Override
+	public TrackQuery withMainArtist(Artist artist) {
+		query.withFieldEquals(MAIN_ARTISTS, artist.getId());
+		return this;
+	}
+
+	@Override
+	public TrackQuery withOriginal(Track track) {
+		return withOriginal(track.getId());
+	}
+
+	@Override
+	public TrackQuery withOriginal(ObjectId id) {
+		query.withFieldEquals(ORIGINAL, id);
+		return this;
+	}
+
+	@Override
+	public TrackQuery withFeature(Artist artist) {
+		query.withFieldEquals(FEATURES, artist.getId());
+		return this;
+	}
+
+	@Override
+	public TrackQuery withProducer(Artist artist) {
+		query.withFieldEquals(PRODUCERS, artist.getId());
+		return this;
+	}
+
+	@Override
+	public TrackQuery withBPM(int min, int max) {
+		query.withFieldGreater(BPM, min, INCLUDE_BOUND)
+		.withFieldSmaller(BPM, max, INCLUDE_BOUND);
 		return this;
 	}
 
@@ -65,19 +104,38 @@ class TrackQueryImpl extends AbstractQuery<Track> implements TrackQuery {
 	}
 
 	@Override
+	public TrackQuery withLyrics(Pattern regex) {
+		query.withFieldRegex(LYRICS, regex);
+		return this;
+	}
+
+	@Override
 	public TrackQuery withExplicitLyrics(boolean explicit) {
 		query.withFieldEquals(EXPLICIT, explicit);
 		return this;
 	}
 
 	@Override
-	public TrackQuery withOriginal(Track track) {
-		return withOriginal(track.getId());
+	public TrackQuery withHiddenTrack(Pattern regex) {
+		query.withFieldRegex(HIDDEN_TRACK, regex);
+		return this;
 	}
 
 	@Override
-	public TrackQuery withOriginal(ObjectId id) {
-		query.withFieldEquals(ORIGINAL, id);
+	public TrackQuery withVersionArtist(Artist artist) {
+		query.withFieldEquals(VERSION_ARTISTS, artist.getId());
+		return this;
+	}
+
+	@Override
+	public TrackQuery withVersionToken(String token) {
+		query.withFieldEquals(VERSION_TOKEN, token);
+		return this;
+	}
+
+	@Override
+	public TrackQuery withVersionToken(Pattern regex) {
+		query.withFieldEquals(VERSION_TOKEN, regex);
 		return this;
 	}
 	
