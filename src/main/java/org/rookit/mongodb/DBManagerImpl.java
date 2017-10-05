@@ -23,6 +23,7 @@ package org.rookit.mongodb;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
 import org.rookit.dm.album.Album;
@@ -262,5 +263,13 @@ class DBManagerImpl implements DBManager{
 	@Override
 	public InputStream stream(SmofGridRef ref) {
 		return smof.getGridStreamManager().download(ref);
+	}
+
+	@Override
+	public Stream<String> streamTrackFormats() {
+		return smof.find(TrackFormat.class)
+				.results()
+				.stream()
+				.map(t -> t.getValue());
 	}
 }

@@ -23,6 +23,7 @@ package org.rookit.mongodb;
 
 import java.io.Closeable;
 import java.io.InputStream;
+import java.util.stream.Stream;
 
 import org.rookit.dm.album.Album;
 import org.rookit.dm.artist.Artist;
@@ -87,6 +88,7 @@ public interface DBManager extends Closeable{
 
 	int getIgnoredOccurrences(String value);
 	int getTrackFormatOccurrences(String value);
+	Stream<String> streamTrackFormats();
 	
 	@Override
 	boolean equals(Object object);
