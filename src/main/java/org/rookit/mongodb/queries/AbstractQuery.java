@@ -21,22 +21,29 @@
  ******************************************************************************/
 package org.rookit.mongodb.queries;
 
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 import org.smof.collection.ParentQuery;
 import org.smof.element.Element;
 
-abstract class AbstractQuery<T extends Element> implements RookitQuery<T> {
-	
-	protected final ParentQuery<T> query;
+abstract class AbstractQuery<E extends Element> implements RookitQuery<E> {
 
-	protected AbstractQuery(ParentQuery<T> query) {
+	protected static final boolean INCLUDE_BOUND = false;
+	
+	protected static <T extends Object> Object[] toObjectArray(T[] array) {
+		return Arrays.stream(array).map(t -> (Object) t).toArray();
+	}
+	
+	protected final ParentQuery<E> query;
+
+	protected AbstractQuery(ParentQuery<E> query) {
 		super();
 		this.query = query;
 	}
 	
 	@Override
-	public Stream<T> stream() {
+	public Stream<E> stream() {
 		return query.results().stream();
 	}
 	
@@ -47,12 +54,12 @@ abstract class AbstractQuery<T extends Element> implements RookitQuery<T> {
 	
 	
 	@Override
-	public T first() {
+	public E first() {
 		return query.results().first();
 	}
 	
 	@Override
-	public T byElement(T element) {
+	public E byElement(E element) {
 		return query.byElement(element);
 	}
 

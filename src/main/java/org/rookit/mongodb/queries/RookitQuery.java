@@ -5,14 +5,14 @@ import java.util.stream.Stream;
 import org.smof.element.Element;
 
 @SuppressWarnings("javadoc")
-public interface RookitQuery<T extends Element> {
+public interface RookitQuery<E extends Element> {
 
-	Stream<T> stream();
+	Stream<E> stream();
 
 	long count();
 
-	T first();
+	E first();
 
-	T byElement(T element);
+	E byElement(E element);
 
 }
