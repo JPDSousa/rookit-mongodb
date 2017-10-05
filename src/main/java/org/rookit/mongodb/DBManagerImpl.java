@@ -79,11 +79,13 @@ class DBManagerImpl implements DBManager{
 	
 	private CollectionOptions<TrackFormat> getTFormatOptions() {
 		final CollectionOptions<TrackFormat> options = CollectionOptions.create();
+		options.upsert(true);
 		return options;
 	}
 	
 	private CollectionOptions<IgnoreField> getIngoredOptions() {
 		final CollectionOptions<IgnoreField> options = CollectionOptions.create();
+		options.upsert(true);
 		return options;
 	}
 
