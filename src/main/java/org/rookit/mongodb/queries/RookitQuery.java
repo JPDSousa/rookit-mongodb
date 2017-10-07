@@ -2,6 +2,7 @@ package org.rookit.mongodb.queries;
 
 import java.util.stream.Stream;
 
+import org.bson.types.ObjectId;
 import org.smof.element.Element;
 
 @SuppressWarnings("javadoc")
@@ -14,5 +15,7 @@ public interface RookitQuery<E extends Element> {
 	E first();
 
 	E byElement(E element);
+	
+	E byID(ObjectId id);
 
 }
