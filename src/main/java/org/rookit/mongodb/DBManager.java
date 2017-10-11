@@ -25,6 +25,7 @@ import java.io.Closeable;
 import java.io.InputStream;
 import java.util.stream.Stream;
 
+import org.apache.spark.api.java.JavaRDD;
 import org.rookit.dm.album.Album;
 import org.rookit.dm.artist.Artist;
 import org.rookit.dm.genre.Genre;
@@ -85,6 +86,11 @@ public interface DBManager extends Closeable{
 	GenreQuery getGenres();
 	TrackQuery getTracks();
 	AlbumQuery getAlbums();
+	
+	JavaRDD<Track> streamTracks();
+	JavaRDD<Album> streamAlbums();
+	JavaRDD<Artist> streamArtists();
+	JavaRDD<Genre> streamGenres();
 
 	int getIgnoredOccurrences(String value);
 	int getTrackFormatOccurrences(String value);

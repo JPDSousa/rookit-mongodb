@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.spark.api.java.JavaRDD;
 import org.rookit.dm.album.Album;
 import org.rookit.dm.album.AlbumFactory;
 import org.rookit.dm.artist.Artist;
@@ -41,6 +42,7 @@ import org.rookit.mongodb.queries.ArtistQuery;
 import org.rookit.mongodb.queries.GenreQuery;
 import org.rookit.mongodb.queries.QueryFactory;
 import org.rookit.mongodb.queries.TrackQuery;
+import org.rookit.mongodb.spark.ElementSpark;
 import org.rookit.mongodb.utils.DatabaseValidator;
 import org.smof.collection.CollectionOptions;
 import org.smof.collection.Smof;
@@ -51,12 +53,18 @@ class DBManagerImpl implements DBManager{
 	
 	private static final DatabaseValidator VALIDATOR = DatabaseValidator.getDefault();
 
+	private final String databaseName;
 	private final Smof smof;
 	private final QueryFactory queryFactory;
+	private ElementSpark<Track> trackStreamGenerator;
+	private ElementSpark<Album> albumStreamGenerator;
+	private ElementSpark<Artist> artistStreamGenerator;
+	private ElementSpark<Genre> genreStreamGenerator;
 
 	DBManagerImpl(String host, int port, String databaseName) {
 		smof = Smof.create(host, port, databaseName);
 		this.queryFactory = QueryFactory.getDefault();
+		this.databaseName = databaseName;
 	}
 
 	@Override
@@ -75,6 +83,10 @@ class DBManagerImpl implements DBManager{
 		smof.loadCollection(TRACK_FORMATS, TrackFormat.class, getTFormatOptions());
 		smof.loadBucket(Track.AUDIO);
 		smof.loadBucket(Album.COVER_BUCKET);
+		trackStreamGenerator = new ElementSpark<>(databaseName, smof.getCollection(Track.class));
+		albumStreamGenerator = new ElementSpark<>(databaseName, smof.getCollection(Album.class));
+		artistStreamGenerator = new ElementSpark<>(databaseName, smof.getCollection(Artist.class));
+		genreStreamGenerator = new ElementSpark<>(databaseName, smof.getCollection(Genre.class));
 	}
 	
 	private CollectionOptions<TrackFormat> getTFormatOptions() {
@@ -273,5 +285,25 @@ class DBManagerImpl implements DBManager{
 				.results()
 				.stream()
 				.map(t -> t.getValue());
+	}
+
+	@Override
+	public JavaRDD<Track> streamTracks() {
+		return trackStreamGenerator.stream();
+	}
+
+	@Override
+	public JavaRDD<Album> streamAlbums() {
+		return albumStreamGenerator.stream();
+	}
+
+	@Override
+	public JavaRDD<Artist> streamArtists() {
+		return artistStreamGenerator.stream();
+	}
+
+	@Override
+	public JavaRDD<Genre> streamGenres() {
+		return genreStreamGenerator.stream();
 	}
 }
