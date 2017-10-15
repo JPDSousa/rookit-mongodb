@@ -30,10 +30,12 @@ import org.rookit.dm.artist.Artist;
 import org.rookit.dm.genre.Genre;
 import org.rookit.dm.parser.IgnoreField;
 import org.rookit.dm.parser.TrackFormat;
+import org.rookit.dm.play.Playlist;
 import org.rookit.dm.track.Track;
 import org.rookit.mongodb.queries.AlbumQuery;
 import org.rookit.mongodb.queries.ArtistQuery;
 import org.rookit.mongodb.queries.GenreQuery;
+import org.rookit.mongodb.queries.PlaylistQuery;
 import org.rookit.mongodb.queries.TrackQuery;
 import org.smof.gridfs.SmofGridRef;
 
@@ -74,11 +76,13 @@ public interface DBManager extends Closeable{
 	void addGenre(Genre genre);
 	void addTrack(Track track);
 	void addArtist(Artist artist);
+	void addPlaylist(Playlist playlist);
 	
 	void updateAlbum(Album album);
 	void updateGenre(Genre genre);
 	void updateTrack(Track trak);
 	void updateArtist(Artist artist);
+	void updatePlaylist(Playlist playlist);
 	void updateIgnored(IgnoreField value);
 	void updateTrackFormat(TrackFormat value);
 	
@@ -86,6 +90,7 @@ public interface DBManager extends Closeable{
 	GenreQuery getGenres();
 	TrackQuery getTracks();
 	AlbumQuery getAlbums();
+	PlaylistQuery getPlaylists();
 
 	int getIgnoredOccurrences(String value);
 	int getTrackFormatOccurrences(String value);
