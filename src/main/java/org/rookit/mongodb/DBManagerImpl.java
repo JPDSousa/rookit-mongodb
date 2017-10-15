@@ -78,6 +78,7 @@ class DBManagerImpl implements DBManager{
 		smof.loadCollection(TRACK_FORMATS, TrackFormat.class, getTFormatOptions());
 		smof.loadBucket(Track.AUDIO);
 		smof.loadBucket(Album.COVER_BUCKET);
+		smof.loadBucket(Artist.PICTURE_BUCKET);
 	}
 	
 	private CollectionOptions<Playlist> getPlaylistOptions() {
