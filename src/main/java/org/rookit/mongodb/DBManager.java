@@ -56,6 +56,7 @@ public interface DBManager extends Closeable{
 	String ARTISTS = "Artists";
 	String ALBUMS = "Albums";
 	String TRACKS = "Tracks";
+	String PLAYLISTS = "Playlists";
 	
 	String IGNORED = "Ignored";
 	String TRACK_FORMATS = "TFormats";
