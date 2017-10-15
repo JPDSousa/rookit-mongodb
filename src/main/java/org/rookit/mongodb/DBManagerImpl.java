@@ -34,6 +34,8 @@ import org.rookit.dm.genre.Genre;
 import org.rookit.dm.genre.GenreFactory;
 import org.rookit.dm.parser.IgnoreField;
 import org.rookit.dm.parser.TrackFormat;
+import org.rookit.dm.play.Playlist;
+import org.rookit.dm.play.PlaylistFactory;
 import org.rookit.dm.track.Track;
 import org.rookit.dm.track.TrackFactory;
 import org.rookit.mongodb.queries.AlbumQuery;
@@ -71,12 +73,18 @@ class DBManagerImpl implements DBManager{
 		smof.loadCollection(ALBUMS, Album.class, AlbumFactory.getDefault(), getAlbumOptions());
 		smof.loadCollection(ARTISTS, Artist.class, ArtistFactory.getDefault(), getArtistOptions());
 		smof.loadCollection(GENRES, Genre.class, GenreFactory.getDefault(), getGenresOptions());
+		smof.loadCollection(PLAYLISTS, Playlist.class, PlaylistFactory.getDefault(), getPlaylistOptions());
 		smof.loadCollection(IGNORED, IgnoreField.class, getIngoredOptions());
 		smof.loadCollection(TRACK_FORMATS, TrackFormat.class, getTFormatOptions());
 		smof.loadBucket(Track.AUDIO);
 		smof.loadBucket(Album.COVER_BUCKET);
 	}
 	
+	private CollectionOptions<Playlist> getPlaylistOptions() {
+		final CollectionOptions<Playlist> options = CollectionOptions.create();
+		return options;
+	}
+
 	private CollectionOptions<TrackFormat> getTFormatOptions() {
 		final CollectionOptions<TrackFormat> options = CollectionOptions.create();
 		options.upsert(true);
