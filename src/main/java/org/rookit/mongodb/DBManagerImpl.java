@@ -41,6 +41,7 @@ import org.rookit.dm.track.TrackFactory;
 import org.rookit.mongodb.queries.AlbumQuery;
 import org.rookit.mongodb.queries.ArtistQuery;
 import org.rookit.mongodb.queries.GenreQuery;
+import org.rookit.mongodb.queries.PlaylistQuery;
 import org.rookit.mongodb.queries.QueryFactory;
 import org.rookit.mongodb.queries.TrackQuery;
 import org.rookit.mongodb.utils.DatabaseValidator;
@@ -62,198 +63,34 @@ class DBManagerImpl implements DBManager{
 	}
 
 	@Override
-	public void reset() throws SmofException {
-		clear();
-		init();
-	}
-
-	@Override
-	public void init() throws SmofException {
-		smof.loadCollection(TRACKS, Track.class, TrackFactory.getDefault(), getTrackOptions());
-		smof.loadCollection(ALBUMS, Album.class, AlbumFactory.getDefault(), getAlbumOptions());
-		smof.loadCollection(ARTISTS, Artist.class, ArtistFactory.getDefault(), getArtistOptions());
-		smof.loadCollection(GENRES, Genre.class, GenreFactory.getDefault(), getGenresOptions());
-		smof.loadCollection(PLAYLISTS, Playlist.class, PlaylistFactory.getDefault(), getPlaylistOptions());
-		smof.loadCollection(IGNORED, IgnoreField.class, getIngoredOptions());
-		smof.loadCollection(TRACK_FORMATS, TrackFormat.class, getTFormatOptions());
-		smof.loadBucket(Track.AUDIO);
-		smof.loadBucket(Album.COVER_BUCKET);
-		smof.loadBucket(Artist.PICTURE_BUCKET);
-	}
-	
-	private CollectionOptions<Playlist> getPlaylistOptions() {
-		final CollectionOptions<Playlist> options = CollectionOptions.create();
-		return options;
-	}
-
-	private CollectionOptions<TrackFormat> getTFormatOptions() {
-		final CollectionOptions<TrackFormat> options = CollectionOptions.create();
-		options.upsert(true);
-		return options;
-	}
-	
-	private CollectionOptions<IgnoreField> getIngoredOptions() {
-		final CollectionOptions<IgnoreField> options = CollectionOptions.create();
-		options.upsert(true);
-		return options;
-	}
-
-	private CollectionOptions<Genre> getGenresOptions() {
-		final CollectionOptions<Genre> options = CollectionOptions.create();
-		options.upsert(true);
-		return options;
-	}
-
-	private CollectionOptions<Artist> getArtistOptions() {
-		final CollectionOptions<Artist> options = CollectionOptions.create();
-		options.upsert(true);
-		return options;
-	}
-
-	private CollectionOptions<Album> getAlbumOptions() {
-		final CollectionOptions<Album> options = CollectionOptions.create();
-		options.upsert(true);
-		return options;
-	}
-
-	private CollectionOptions<Track> getTrackOptions() {
-		final CollectionOptions<Track> options = CollectionOptions.create();
-		options.upsert(false);
-		return options;
-	}
-
-	@Override
-	public void clear() {
-		smof.dropAllCollections();
-		smof.dropAllBuckets();
-	}
-
-	@Override
-	public void loadBucket(String bucketName) {
-		smof.loadBucket(bucketName);
-	}
-
-	@Override
 	public void addAlbum(final Album album) {
-		//		for(Genre genre : album.getGenres()) {
-		//			addGenre(genre);
-		//		}
-		//		for(Artist artist : album.getArtists()) {
-		//			addArtist(artist);
-		//		}
-		//
-		//		for(Track track : album.getTracks()) {
-		//			addTrack(track);
-		//		}
-		//
-		//		albums.insert(album);
-		//		tracks.updateAlbumId(album.getId(), album.getTracks());
 		smof.insert(album);
-	}
-
-
-	@Override
-	public void addGenre(final Genre genre) {
-		//		genres.add(genre);
-		smof.insert(genre);
-	}
-
-	@Override
-	public void addTrack(final Track track) {
-		smof.insert(track);
 	}
 
 	@Override
 	public void addArtist(final Artist artist) {
 		smof.insert(artist);
 	}
-
+	
 	@Override
-	public void updateAlbum(Album album) {
-		smof.update(Album.class)
-		.setUpsert(true)
-		.fromElement(album);
+	public void addGenre(final Genre genre) {
+		smof.insert(genre);
 	}
 
 	@Override
-	public void updateGenre(final Genre genre) {
-		//		genres.update(genre);
+	public void addPlaylist(Playlist playlist) {
+		smof.insert(playlist);
+	}
+	
+	@Override
+	public void addTrack(final Track track) {
+		smof.insert(track);
 	}
 
 	@Override
-	public void updateTrack(final Track track) {
-		//		updateGenreCollection(track.getGenres());
-		//		updateArtistCollection(track.getMainArtists());
-		//		updateArtistCollection(track.getFeatures());
-		//		updateArtistCollection(track.getVersionArtists());
-		//		updateArtistCollection(track.getProducers());
-		//		tracks.update(track);
-	}
-
-	@Override
-	public void updateArtist(final Artist artist) {
-		//		updateGenreCollection(artist.getGenres());
-		//		artists.update(artist);
-	}
-
-	@Override
-	public ArtistQuery getArtists() {
-		return queryFactory.createArtistQuery(smof.find(Artist.class));
-	}
-
-	@Override
-	public GenreQuery getGenres() {
-		return queryFactory.createGenreQuery(smof.find(Genre.class));
-	}
-
-	@Override
-	public TrackQuery getTracks() {
-		return queryFactory.createTrackQuery(smof.find(Track.class));
-	}
-
-	@Override
-	public AlbumQuery getAlbums() {
-		return queryFactory.createAlbumQuery(smof.find(Album.class));
-	}
-
-	@Override
-	public void updateIgnored(IgnoreField value) {
-		smof.update(IgnoreField.class)
-		.setUpsert(true)
-		.increase(value.getOccurrences(), IgnoreField.OCCURRENCES)
-		.where()
-		.fieldEq(IgnoreField.VALUE, value.getValue())
-		.execute();
-	}
-
-	@Override
-	public int getIgnoredOccurrences(String value) {
-		final IgnoreField result = smof.find(IgnoreField.class)
-				.withFieldEquals(IgnoreField.VALUE, value.toLowerCase())
-				.results()
-				.first();
-		if(result == null) {
-			return 0;
-		}
-		return result.getOccurrences();
-	}
-
-	@Override
-	public void updateTrackFormat(TrackFormat value) {
-		smof.update(TrackFormat.class)
-		.setUpsert(true)
-		.increase(value.getOccurrences(), TrackFormat.OCCURRENCES)
-		.where()
-		.fieldEq(TrackFormat.VALUE, value.getValue())
-		.execute();
-	}
-
-	@Override
-	public int getTrackFormatOccurrences(String value) {
-		final TrackFormat result = smof.find(TrackFormat.class)
-				.withFieldEquals(TrackFormat.VALUE, value.toLowerCase())
-				.results().first();
-		return result == null ? 0 : result.getOccurrences();
+	public void clear() {
+		smof.dropAllCollections();
+		smof.dropAllBuckets();
 	}
 
 	@Override
@@ -271,6 +108,118 @@ class DBManagerImpl implements DBManager{
 		}
 	}
 
+	private CollectionOptions<Album> getAlbumOptions() {
+		final CollectionOptions<Album> options = CollectionOptions.create();
+		options.upsert(true);
+		return options;
+	}
+
+	@Override
+	public AlbumQuery getAlbums() {
+		return queryFactory.createAlbumQuery(smof.find(Album.class));
+	}
+
+	private CollectionOptions<Artist> getArtistOptions() {
+		final CollectionOptions<Artist> options = CollectionOptions.create();
+		options.upsert(true);
+		return options;
+	}
+
+	@Override
+	public ArtistQuery getArtists() {
+		return queryFactory.createArtistQuery(smof.find(Artist.class));
+	}
+
+
+	@Override
+	public GenreQuery getGenres() {
+		return queryFactory.createGenreQuery(smof.find(Genre.class));
+	}
+
+	private CollectionOptions<Genre> getGenresOptions() {
+		final CollectionOptions<Genre> options = CollectionOptions.create();
+		options.upsert(true);
+		return options;
+	}
+
+	@Override
+	public int getIgnoredOccurrences(String value) {
+		final IgnoreField result = smof.find(IgnoreField.class)
+				.withFieldEquals(IgnoreField.VALUE, value.toLowerCase())
+				.results()
+				.first();
+		if(result == null) {
+			return 0;
+		}
+		return result.getOccurrences();
+	}
+
+	private CollectionOptions<IgnoreField> getIngoredOptions() {
+		final CollectionOptions<IgnoreField> options = CollectionOptions.create();
+		options.upsert(true);
+		return options;
+	}
+
+	private CollectionOptions<Playlist> getPlaylistOptions() {
+		final CollectionOptions<Playlist> options = CollectionOptions.create();
+		return options;
+	}
+
+	@Override
+	public PlaylistQuery getPlaylists() {
+		return queryFactory.createPlaylistQuery(smof.find(Playlist.class));
+	}
+
+	private CollectionOptions<TrackFormat> getTFormatOptions() {
+		final CollectionOptions<TrackFormat> options = CollectionOptions.create();
+		options.upsert(true);
+		return options;
+	}
+
+	@Override
+	public int getTrackFormatOccurrences(String value) {
+		final TrackFormat result = smof.find(TrackFormat.class)
+				.withFieldEquals(TrackFormat.VALUE, value.toLowerCase())
+				.results().first();
+		return result == null ? 0 : result.getOccurrences();
+	}
+
+	private CollectionOptions<Track> getTrackOptions() {
+		final CollectionOptions<Track> options = CollectionOptions.create();
+		options.upsert(false);
+		return options;
+	}
+
+	@Override
+	public TrackQuery getTracks() {
+		return queryFactory.createTrackQuery(smof.find(Track.class));
+	}
+
+	@Override
+	public void init() throws SmofException {
+		smof.loadCollection(TRACKS, Track.class, TrackFactory.getDefault(), getTrackOptions());
+		smof.loadCollection(ALBUMS, Album.class, AlbumFactory.getDefault(), getAlbumOptions());
+		smof.loadCollection(ARTISTS, Artist.class, ArtistFactory.getDefault(), getArtistOptions());
+		smof.loadCollection(GENRES, Genre.class, GenreFactory.getDefault(), getGenresOptions());
+		smof.loadCollection(PLAYLISTS, Playlist.class, PlaylistFactory.getDefault(), getPlaylistOptions());
+		smof.loadCollection(IGNORED, IgnoreField.class, getIngoredOptions());
+		smof.loadCollection(TRACK_FORMATS, TrackFormat.class, getTFormatOptions());
+		smof.loadBucket(Track.AUDIO);
+		smof.loadBucket(Album.COVER_BUCKET);
+		smof.loadBucket(Artist.PICTURE_BUCKET);
+	}
+
+	@Override
+	public void loadBucket(String bucketName) {
+		smof.loadBucket(bucketName);
+	}
+
+	@Override
+	public void reset() throws SmofException {
+		clear();
+		init();
+	}
+
 	@Override
 	public InputStream stream(SmofGridRef ref) {
 		return smof.getGridStreamManager().download(ref);
@@ -282,5 +231,59 @@ class DBManagerImpl implements DBManager{
 				.results()
 				.stream()
 				.map(t -> t.getValue());
+	}
+
+	@Override
+	public void updateAlbum(Album album) {
+		smof.update(Album.class)
+		.setUpsert(true)
+		.fromElement(album);
+	}
+
+	@Override
+	public void updateArtist(final Artist artist) {
+		//		updateGenreCollection(artist.getGenres());
+		//		artists.update(artist);
+	}
+
+	@Override
+	public void updateGenre(final Genre genre) {
+		//		genres.update(genre);
+	}
+
+	@Override
+	public void updateIgnored(IgnoreField value) {
+		smof.update(IgnoreField.class)
+		.setUpsert(true)
+		.increase(value.getOccurrences(), IgnoreField.OCCURRENCES)
+		.where()
+		.fieldEq(IgnoreField.VALUE, value.getValue())
+		.execute();
+	}
+
+	@Override
+	public void updatePlaylist(Playlist playlist) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateTrack(final Track track) {
+		//		updateGenreCollection(track.getGenres());
+		//		updateArtistCollection(track.getMainArtists());
+		//		updateArtistCollection(track.getFeatures());
+		//		updateArtistCollection(track.getVersionArtists());
+		//		updateArtistCollection(track.getProducers());
+		//		tracks.update(track);
+	}
+
+	@Override
+	public void updateTrackFormat(TrackFormat value) {
+		smof.update(TrackFormat.class)
+		.setUpsert(true)
+		.increase(value.getOccurrences(), TrackFormat.OCCURRENCES)
+		.where()
+		.fieldEq(TrackFormat.VALUE, value.getValue())
+		.execute();
 	}
 }
