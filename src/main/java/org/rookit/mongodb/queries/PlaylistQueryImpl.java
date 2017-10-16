@@ -4,6 +4,8 @@ import org.rookit.dm.play.Playlist;
 import org.rookit.dm.track.Track;
 import org.smof.collection.ParentQuery;
 
+import static org.rookit.dm.play.DatabaseFields.*;
+
 class PlaylistQueryImpl extends AbstractPlayableQuery<Playlist, PlaylistQuery> implements PlaylistQuery {
 	
 	PlaylistQueryImpl(ParentQuery<Playlist> query) {
@@ -12,13 +14,13 @@ class PlaylistQueryImpl extends AbstractPlayableQuery<Playlist, PlaylistQuery> i
 
 	@Override
 	public PlaylistQuery withName(String name) {
-		query.withFieldEquals(Playlist.NAME, name);
+		query.withFieldEquals(NAME, name);
 		return this;
 	}
 
 	@Override
 	public PlaylistQuery withTrack(Track track) {
-		query.withFieldEquals(Playlist.TRACKS, track);
+		query.withFieldEquals(TRACKS, track);
 		return this;
 	}
 
