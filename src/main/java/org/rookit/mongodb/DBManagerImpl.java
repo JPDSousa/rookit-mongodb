@@ -27,6 +27,8 @@ import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.sql.SparkSession;
 import org.rookit.dm.album.Album;
 import org.rookit.dm.album.AlbumFactory;
 import org.rookit.dm.artist.Artist;
@@ -42,10 +44,11 @@ import org.rookit.mongodb.queries.ArtistQuery;
 import org.rookit.mongodb.queries.GenreQuery;
 import org.rookit.mongodb.queries.QueryFactory;
 import org.rookit.mongodb.queries.TrackQuery;
-import org.rookit.mongodb.spark.ElementSpark;
+import org.rookit.mongodb.spark.SparkHandler;
 import org.rookit.mongodb.utils.DatabaseValidator;
 import org.smof.collection.CollectionOptions;
 import org.smof.collection.Smof;
+import org.smof.element.Element;
 import org.smof.exception.SmofException;
 import org.smof.gridfs.SmofGridRef;
 
@@ -53,18 +56,28 @@ class DBManagerImpl implements DBManager{
 	
 	private static final DatabaseValidator VALIDATOR = DatabaseValidator.getDefault();
 
-	private final String databaseName;
 	private final Smof smof;
 	private final QueryFactory queryFactory;
-	private ElementSpark<Track> trackStreamGenerator;
-	private ElementSpark<Album> albumStreamGenerator;
-	private ElementSpark<Artist> artistStreamGenerator;
-	private ElementSpark<Genre> genreStreamGenerator;
+	
+	private final SparkHandler<Track> trackSpark;
+	private final SparkHandler<Album> albumSpark;
+	private final SparkHandler<Artist> artistSpark;
+	private final SparkHandler<Genre> genreSpark;
+	
+	private final JavaSparkContext sparkContext;
 
 	DBManagerImpl(String host, int port, String databaseName) {
 		smof = Smof.create(host, port, databaseName);
 		this.queryFactory = QueryFactory.getDefault();
-		this.databaseName = databaseName;
+		final SparkSession session = SparkSession.builder()
+				.master("local")
+				.appName("rookit-spark")
+				.getOrCreate();
+		sparkContext = new JavaSparkContext(session.sparkContext());
+		trackSpark = new SparkHandler<>(host, port, databaseName, Track.class);
+		albumSpark = new SparkHandler<>(host, port, databaseName, Album.class);
+		artistSpark = new SparkHandler<>(host, port, databaseName, Artist.class);
+		genreSpark = new SparkHandler<>(host, port, databaseName, Genre.class);
 	}
 
 	@Override
@@ -83,10 +96,6 @@ class DBManagerImpl implements DBManager{
 		smof.loadCollection(TRACK_FORMATS, TrackFormat.class, getTFormatOptions());
 		smof.loadBucket(Track.AUDIO);
 		smof.loadBucket(Album.COVER_BUCKET);
-		trackStreamGenerator = new ElementSpark<>(databaseName, smof.getCollection(Track.class));
-		albumStreamGenerator = new ElementSpark<>(databaseName, smof.getCollection(Album.class));
-		artistStreamGenerator = new ElementSpark<>(databaseName, smof.getCollection(Artist.class));
-		genreStreamGenerator = new ElementSpark<>(databaseName, smof.getCollection(Genre.class));
 	}
 	
 	private CollectionOptions<TrackFormat> getTFormatOptions() {
@@ -289,21 +298,25 @@ class DBManagerImpl implements DBManager{
 
 	@Override
 	public JavaRDD<Track> streamTracks() {
-		return trackStreamGenerator.stream();
+		return stream(trackSpark);
 	}
 
 	@Override
 	public JavaRDD<Album> streamAlbums() {
-		return albumStreamGenerator.stream();
+		return stream(albumSpark);
 	}
 
 	@Override
 	public JavaRDD<Artist> streamArtists() {
-		return artistStreamGenerator.stream();
+		return stream(artistSpark);
 	}
 
 	@Override
 	public JavaRDD<Genre> streamGenres() {
-		return genreStreamGenerator.stream();
+		return stream(genreSpark);
+	}
+	
+	private <E extends Element> JavaRDD<E> stream(SparkHandler<E> handler) {
+		return handler.stream(sparkContext, smof.getCollection(handler.getType()));
 	}
 }

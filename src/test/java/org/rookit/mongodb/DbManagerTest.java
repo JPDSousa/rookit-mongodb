@@ -115,5 +115,12 @@ public class DbManagerTest {
 		final Artist actual = guineaPig.getArtists().byElement(expected);
 		assertEquals(expected, actual);
 	}
+	
+	@Test
+	public final void testSparkArtist() {
+		final Artist expected = factory.getRandomArtist();
+		guineaPig.addArtist(expected);
+		assertEquals(expected, guineaPig.streamArtists().first());
+	}
 
 }
