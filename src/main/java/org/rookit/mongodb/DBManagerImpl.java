@@ -242,13 +242,12 @@ class DBManagerImpl implements DBManager{
 
 	@Override
 	public void updateArtist(final Artist artist) {
-		//		updateGenreCollection(artist.getGenres());
-		//		artists.update(artist);
+		smof.update(Artist.class).fromElement(artist);
 	}
 
 	@Override
 	public void updateGenre(final Genre genre) {
-		//		genres.update(genre);
+		smof.update(Genre.class).fromElement(genre);
 	}
 
 	@Override
@@ -263,18 +262,12 @@ class DBManagerImpl implements DBManager{
 
 	@Override
 	public void updatePlaylist(Playlist playlist) {
-		// TODO Auto-generated method stub
-		
+		smof.update(Playlist.class).fromElement(playlist);
 	}
 
 	@Override
 	public void updateTrack(final Track track) {
-		//		updateGenreCollection(track.getGenres());
-		//		updateArtistCollection(track.getMainArtists());
-		//		updateArtistCollection(track.getFeatures());
-		//		updateArtistCollection(track.getVersionArtists());
-		//		updateArtistCollection(track.getProducers());
-		//		tracks.update(track);
+		smof.update(Track.class).fromElement(track);
 	}
 
 	@Override
