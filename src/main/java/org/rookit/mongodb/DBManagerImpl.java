@@ -44,9 +44,16 @@ import org.rookit.mongodb.queries.GenreQuery;
 import org.rookit.mongodb.queries.PlaylistQuery;
 import org.rookit.mongodb.queries.QueryFactory;
 import org.rookit.mongodb.queries.TrackQuery;
+import org.rookit.mongodb.update.AlbumUpdateQuery;
+import org.rookit.mongodb.update.ArtistUpdateQuery;
+import org.rookit.mongodb.update.GenreUpdateQuery;
+import org.rookit.mongodb.update.PlaylistUpdateQuery;
+import org.rookit.mongodb.update.TrackUpdateQuery;
+import org.rookit.mongodb.update.UpdateQueryFactory;
 import org.rookit.mongodb.utils.DatabaseValidator;
 import org.smof.collection.CollectionOptions;
 import org.smof.collection.Smof;
+import org.smof.collection.SmofUpdate;
 import org.smof.exception.SmofException;
 import org.smof.gridfs.SmofGridRef;
 
@@ -56,10 +63,12 @@ class DBManagerImpl implements DBManager{
 
 	private final Smof smof;
 	private final QueryFactory queryFactory;
+	private final UpdateQueryFactory updateFactory;
 
 	DBManagerImpl(String host, int port, String databaseName) {
-		smof = Smof.create(host, port, databaseName);
+		this.smof = Smof.create(host, port, databaseName);
 		this.queryFactory = QueryFactory.getDefault();
+		this.updateFactory = UpdateQueryFactory.getDefault();
 	}
 
 	@Override
@@ -234,49 +243,77 @@ class DBManagerImpl implements DBManager{
 	}
 
 	@Override
-	public void updateAlbum(Album album) {
-		smof.update(Album.class)
-		.setUpsert(true)
-		.fromElement(album);
+	public void replaceAlbum(Album album) {
+		smof.replace(Album.class, album);
 	}
 
 	@Override
-	public void updateArtist(final Artist artist) {
-		smof.update(Artist.class).fromElement(artist);
+	public void replaceArtist(final Artist artist) {
+		smof.replace(Artist.class, artist);
 	}
 
 	@Override
-	public void updateGenre(final Genre genre) {
-		smof.update(Genre.class).fromElement(genre);
+	public void replaceGenre(final Genre genre) {
+		smof.replace(Genre.class, genre);
 	}
 
 	@Override
 	public void updateIgnored(IgnoreField value) {
 		smof.update(IgnoreField.class)
 		.setUpsert(true)
-		.increase(value.getOccurrences(), IgnoreField.OCCURRENCES)
+		.increase(IgnoreField.OCCURRENCES, value.getOccurrences())
 		.where()
 		.fieldEq(IgnoreField.VALUE, value.getValue())
 		.execute();
 	}
 
 	@Override
-	public void updatePlaylist(Playlist playlist) {
-		smof.update(Playlist.class).fromElement(playlist);
+	public void replacePlaylist(Playlist playlist) {
+		smof.replace(Playlist.class, playlist);
 	}
 
 	@Override
-	public void updateTrack(final Track track) {
-		smof.update(Track.class).fromElement(track);
+	public void replaceTrack(final Track track) {
+		smof.replace(Track.class, track);
 	}
 
 	@Override
 	public void updateTrackFormat(TrackFormat value) {
 		smof.update(TrackFormat.class)
 		.setUpsert(true)
-		.increase(value.getOccurrences(), TrackFormat.OCCURRENCES)
+		.increase(TrackFormat.OCCURRENCES, value.getOccurrences())
 		.where()
 		.fieldEq(TrackFormat.VALUE, value.getValue())
 		.execute();
+	}
+
+	@Override
+	public AlbumUpdateQuery updateAlbum() {
+		final SmofUpdate<Album> update = smof.update(Album.class);
+		return updateFactory.newAlbumUpdateQuery(update, getAlbums());
+	}
+
+	@Override
+	public GenreUpdateQuery updateGenre() {
+		final SmofUpdate<Genre> update = smof.update(Genre.class);
+		return updateFactory.newGenreUpdateQuery(update, getGenres());
+	}
+
+	@Override
+	public TrackUpdateQuery updateTrack() {
+		final SmofUpdate<Track> update = smof.update(Track.class);
+		return updateFactory.newTrackUpdateQuery(update, getTracks());
+	}
+
+	@Override
+	public ArtistUpdateQuery updateArtist() {
+		final SmofUpdate<Artist> update = smof.update(Artist.class);
+		return updateFactory.newArtistUpdateQuery(update, getArtists());
+	}
+
+	@Override
+	public PlaylistUpdateQuery updatePlaylist() {
+		final SmofUpdate<Playlist> update = smof.update(Playlist.class);
+		return updateFactory.newPlaylistUpdateQuery(update, getPlaylists());
 	}
 }

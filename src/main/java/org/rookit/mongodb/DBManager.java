@@ -37,6 +37,11 @@ import org.rookit.mongodb.queries.ArtistQuery;
 import org.rookit.mongodb.queries.GenreQuery;
 import org.rookit.mongodb.queries.PlaylistQuery;
 import org.rookit.mongodb.queries.TrackQuery;
+import org.rookit.mongodb.update.AlbumUpdateQuery;
+import org.rookit.mongodb.update.ArtistUpdateQuery;
+import org.rookit.mongodb.update.GenreUpdateQuery;
+import org.rookit.mongodb.update.PlaylistUpdateQuery;
+import org.rookit.mongodb.update.TrackUpdateQuery;
 import org.smof.gridfs.SmofGridRef;
 
 @SuppressWarnings("javadoc")
@@ -78,11 +83,16 @@ public interface DBManager extends Closeable{
 	void addArtist(Artist artist);
 	void addPlaylist(Playlist playlist);
 	
-	void updateAlbum(Album album);
-	void updateGenre(Genre genre);
-	void updateTrack(Track trak);
-	void updateArtist(Artist artist);
-	void updatePlaylist(Playlist playlist);
+	void replaceAlbum(Album album);
+	AlbumUpdateQuery updateAlbum();
+	void replaceGenre(Genre genre);
+	GenreUpdateQuery updateGenre();
+	void replaceTrack(Track track);
+	TrackUpdateQuery updateTrack();
+	void replaceArtist(Artist artist);
+	ArtistUpdateQuery updateArtist();
+	void replacePlaylist(Playlist playlist);
+	PlaylistUpdateQuery updatePlaylist();
 	void updateIgnored(IgnoreField value);
 	void updateTrackFormat(TrackFormat value);
 	
