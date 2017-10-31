@@ -23,12 +23,11 @@ package org.rookit.mongodb.queries;
 
 import org.rookit.dm.play.Playlist;
 import org.rookit.dm.track.Track;
+import org.rookit.mongodb.queries.filter.PlaylistFilter;
 
 @SuppressWarnings("javadoc")
-public interface PlaylistQuery extends PlayableQuery<Playlist, PlaylistQuery> {
-
-	PlaylistQuery withName(String name);
+public interface PlaylistQuery extends PlayableQuery<Playlist, PlaylistQuery>, PlaylistFilter<PlaylistQuery> {
 	
-	PlaylistQuery withTrack(Track track);
+	//
 	
 }

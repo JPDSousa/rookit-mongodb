@@ -23,12 +23,12 @@ package org.rookit.mongodb.queries;
 
 import java.time.LocalDate;
 
+import org.rookit.dm.play.Playable;
 import org.smof.collection.ParentQuery;
-import org.smof.element.Element;
 
 import static org.rookit.dm.play.Playable.*;
 
-abstract class AbstractPlayableQuery<E extends Element, Q extends RookitQuery<E>> extends AbstractRookitQuery<E> implements PlayableQuery<E, Q> {
+abstract class AbstractPlayableQuery<E extends Playable, Q extends PlayableQuery<E, Q>> extends AbstractRookitQuery<E> implements PlayableQuery<E, Q> {
 	
 	protected AbstractPlayableQuery(ParentQuery<E> query) {
 		super(query);

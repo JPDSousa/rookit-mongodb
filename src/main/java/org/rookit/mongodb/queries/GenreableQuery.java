@@ -21,17 +21,12 @@
  ******************************************************************************/
 package org.rookit.mongodb.queries;
 
-import org.bson.types.ObjectId;
-import org.rookit.dm.genre.Genre;
-import org.smof.element.Element;
+import org.rookit.dm.genre.Genreable;
+import org.rookit.mongodb.queries.filter.GenreableFilter;
 
 @SuppressWarnings("javadoc")
-public interface GenreableQuery<E extends Element, Q extends RookitQuery<E>> extends PlayableQuery<E, Q> {
-
-	Q withGenre(Genre genre);
-	Q withGenre(ObjectId ids);
+public interface GenreableQuery<E extends Genreable, Q extends GenreableQuery<E, Q>> extends PlayableQuery<E, Q>, GenreableFilter<Q> {
 	
-	Q withGenres(Genre[] genres);
-	Q withGenres(ObjectId[] ids);
+	//
 	
 }
