@@ -25,7 +25,7 @@ import org.rookit.dm.play.Playable;
 import org.rookit.mongodb.queries.filter.PlayableFilter;
 
 @SuppressWarnings("javadoc")
-public interface PlayableQuery<E extends Playable, Q extends PlayableQuery<E, Q>> extends RookitQuery<E>, PlayableFilter<Q> {
+public interface PlayableQuery<E extends Playable, Q extends PlayableQuery<E, Q>> extends RookitQuery<Q, E>, PlayableFilter<Q> {
 	
 	//
 

@@ -8,7 +8,7 @@ import org.rookit.dm.album.TypeRelease;
 import org.rookit.dm.artist.Artist;
 
 @SuppressWarnings("javadoc")
-public interface AlbumFilter<Q> extends GenreableFilter<Q> {
+public interface AlbumFilter<Q extends AlbumFilter<Q>> extends GenreableFilter<Q> {
 	
 	Q withTitle(String albumTitle);
 	Q withTitle(Pattern regex);

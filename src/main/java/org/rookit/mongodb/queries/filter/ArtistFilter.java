@@ -10,7 +10,7 @@ import org.rookit.dm.artist.TypeGender;
 import org.rookit.dm.artist.TypeGroup;
 
 @SuppressWarnings("javadoc")
-public interface ArtistFilter<Q> extends GenreableFilter<Q> {
+public interface ArtistFilter<Q extends ArtistFilter<Q>> extends GenreableFilter<Q> {
 	
 	Q withName(String artistName);
 	Q withName(Pattern regex);

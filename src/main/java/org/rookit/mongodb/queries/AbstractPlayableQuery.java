@@ -28,7 +28,7 @@ import org.smof.collection.ParentQuery;
 
 import static org.rookit.dm.play.Playable.*;
 
-abstract class AbstractPlayableQuery<E extends Playable, Q extends PlayableQuery<E, Q>> extends AbstractRookitQuery<E> implements PlayableQuery<E, Q> {
+abstract class AbstractPlayableQuery<E extends Playable, Q extends PlayableQuery<E, Q>> extends AbstractRookitQuery<Q, E> implements PlayableQuery<E, Q> {
 	
 	protected AbstractPlayableQuery(ParentQuery<E> query) {
 		super(query);
