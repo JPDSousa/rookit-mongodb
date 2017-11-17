@@ -23,6 +23,7 @@ package org.rookit.mongodb.queries;
 
 import java.util.stream.Stream;
 
+import org.bson.BsonDocument;
 import org.bson.types.ObjectId;
 import org.smof.element.Element;
 
@@ -38,5 +39,7 @@ public interface RookitQuery<E extends Element> {
 	E byElement(E element);
 	
 	E byID(ObjectId id);
+
+	BsonDocument getBson();
 
 }

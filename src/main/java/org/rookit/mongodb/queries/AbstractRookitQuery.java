@@ -24,6 +24,7 @@ package org.rookit.mongodb.queries;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+import org.bson.BsonDocument;
 import org.bson.types.ObjectId;
 import org.smof.collection.ParentQuery;
 import org.smof.element.Element;
@@ -70,4 +71,9 @@ abstract class AbstractRookitQuery<E extends Element> implements RookitQuery<E> 
 				.results().first();
 	}
 
+	@Override
+	public BsonDocument getBson() {
+		return query.asBson();
+	}
+	
 }
