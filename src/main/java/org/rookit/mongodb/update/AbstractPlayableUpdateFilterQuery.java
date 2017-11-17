@@ -7,7 +7,7 @@ import org.rookit.mongodb.queries.PlayableQuery;
 import org.smof.collection.SmofUpdateQuery;
 
 abstract class AbstractPlayableUpdateFilterQuery<E extends Playable, Q extends PlayableQuery<E, Q>, U extends PlayableUpdateFilterQuery<U>> 
-	extends AbstractUpdateFilterQuery<E, Q> 
+	extends AbstractUpdateFilterQuery<E, Q, U> 
 	implements PlayableUpdateFilterQuery<U> {
 
 	protected AbstractPlayableUpdateFilterQuery(Q filter, SmofUpdateQuery<E> updateQuery) {

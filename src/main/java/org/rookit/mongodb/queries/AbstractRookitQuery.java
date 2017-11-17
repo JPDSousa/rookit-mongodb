@@ -29,7 +29,7 @@ import org.bson.types.ObjectId;
 import org.smof.collection.ParentQuery;
 import org.smof.element.Element;
 
-abstract class AbstractRookitQuery<E extends Element> implements RookitQuery<E> {
+abstract class AbstractRookitQuery<Q extends RookitQuery<Q, E>, E extends Element> implements RookitQuery<Q, E> {
 
 	protected static final boolean INCLUDE_BOUND = false;
 	
@@ -65,10 +65,11 @@ abstract class AbstractRookitQuery<E extends Element> implements RookitQuery<E> 
 		return query.byElement(element);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public E byID(ObjectId id) {
-		return query.withFieldEquals(Element.ID, id)
-				.results().first();
+	public Q withId(ObjectId id) {
+		query.withFieldEquals(Element.ID, id);
+		return (Q) this;
 	}
 
 	@Override

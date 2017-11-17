@@ -7,7 +7,7 @@ import org.rookit.dm.artist.Artist;
 import org.rookit.dm.track.Track;
 
 @SuppressWarnings("javadoc")
-public interface TrackFilter<Q> extends GenreableFilter<Q> {
+public interface TrackFilter<Q extends TrackFilter<Q>> extends GenreableFilter<Q> {
 	
 	Q withTitle(String title);
 	Q withTitle(Pattern regex);

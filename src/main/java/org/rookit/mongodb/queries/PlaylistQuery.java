@@ -22,7 +22,6 @@
 package org.rookit.mongodb.queries;
 
 import org.rookit.dm.play.Playlist;
-import org.rookit.dm.track.Track;
 import org.rookit.mongodb.queries.filter.PlaylistFilter;
 
 @SuppressWarnings("javadoc")

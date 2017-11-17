@@ -24,11 +24,11 @@ package org.rookit.mongodb.queries;
 import java.util.stream.Stream;
 
 import org.bson.BsonDocument;
-import org.bson.types.ObjectId;
+import org.rookit.mongodb.queries.filter.RookitFilter;
 import org.smof.element.Element;
 
 @SuppressWarnings("javadoc")
-public interface RookitQuery<E extends Element> {
+public interface RookitQuery<Q extends RookitQuery<Q, E>, E extends Element> extends RookitFilter<Q> {
 
 	Stream<E> stream();
 
@@ -37,8 +37,6 @@ public interface RookitQuery<E extends Element> {
 	E first();
 
 	E byElement(E element);
-	
-	E byID(ObjectId id);
 
 	BsonDocument getBson();
 

@@ -3,7 +3,7 @@ package org.rookit.mongodb.queries.filter;
 import java.time.LocalDate;
 
 @SuppressWarnings("javadoc")
-public interface PlayableFilter<Q> {
+public interface PlayableFilter<Q extends PlayableFilter<Q>> extends RookitFilter<Q> {
 	
 	Q playedMoreThan(long plays);
 	Q playedLessThan(long plays);
