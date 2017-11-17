@@ -26,9 +26,6 @@ import java.io.InputStream;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.sql.SparkSession;
 import org.rookit.dm.album.Album;
 import org.rookit.dm.album.AlbumFactory;
 import org.rookit.dm.artist.Artist;
@@ -44,11 +41,9 @@ import org.rookit.mongodb.queries.ArtistQuery;
 import org.rookit.mongodb.queries.GenreQuery;
 import org.rookit.mongodb.queries.QueryFactory;
 import org.rookit.mongodb.queries.TrackQuery;
-import org.rookit.mongodb.spark.SparkHandler;
 import org.rookit.mongodb.utils.DatabaseValidator;
 import org.smof.collection.CollectionOptions;
 import org.smof.collection.Smof;
-import org.smof.element.Element;
 import org.smof.exception.SmofException;
 import org.smof.gridfs.SmofGridRef;
 
@@ -59,25 +54,9 @@ class DBManagerImpl implements DBManager{
 	private final Smof smof;
 	private final QueryFactory queryFactory;
 	
-	private final SparkHandler<Track> trackSpark;
-	private final SparkHandler<Album> albumSpark;
-	private final SparkHandler<Artist> artistSpark;
-	private final SparkHandler<Genre> genreSpark;
-	
-	private final JavaSparkContext sparkContext;
-
 	DBManagerImpl(String host, int port, String databaseName) {
 		smof = Smof.create(host, port, databaseName);
 		this.queryFactory = QueryFactory.getDefault();
-		final SparkSession session = SparkSession.builder()
-				.master("local")
-				.appName("rookit-spark")
-				.getOrCreate();
-		sparkContext = new JavaSparkContext(session.sparkContext());
-		trackSpark = new SparkHandler<>(host, port, databaseName, Track.class);
-		albumSpark = new SparkHandler<>(host, port, databaseName, Album.class);
-		artistSpark = new SparkHandler<>(host, port, databaseName, Artist.class);
-		genreSpark = new SparkHandler<>(host, port, databaseName, Genre.class);
 	}
 
 	@Override
@@ -296,27 +275,4 @@ class DBManagerImpl implements DBManager{
 				.map(t -> t.getValue());
 	}
 
-	@Override
-	public JavaRDD<Track> streamTracks() {
-		return stream(trackSpark);
-	}
-
-	@Override
-	public JavaRDD<Album> streamAlbums() {
-		return stream(albumSpark);
-	}
-
-	@Override
-	public JavaRDD<Artist> streamArtists() {
-		return stream(artistSpark);
-	}
-
-	@Override
-	public JavaRDD<Genre> streamGenres() {
-		return stream(genreSpark);
-	}
-	
-	private <E extends Element> JavaRDD<E> stream(SparkHandler<E> handler) {
-		return handler.stream(sparkContext, smof.getCollection(handler.getType()));
-	}
 }
