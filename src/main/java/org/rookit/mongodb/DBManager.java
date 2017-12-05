@@ -67,6 +67,10 @@ public interface DBManager extends Closeable{
 	
 	String IGNORED = "Ignored";
 	String TRACK_FORMATS = "TFormats";
+
+	String AUDIO_BUCKET = "audio";
+	String COVER_BUCKET = "album_covers";
+	String PICTURE_BUCKET = "artist_pictures";
 	
 	void reset();
 	

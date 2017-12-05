@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Set;
 
 import org.rookit.dm.album.Album;
+import org.rookit.dm.album.TrackSlot;
 import org.rookit.dm.artist.Artist;
 import org.rookit.dm.track.Track;
 import org.rookit.mongodb.queries.AlbumQuery;
@@ -74,6 +75,12 @@ class AlbumUpdateQueryImpl extends AbstractGenreableUpdateQuery<Album, AlbumQuer
 	@Override
 	public AlbumUpdateQuery setTitle(String title) {
 		query.set(TITLE, title);
+		return this;
+	}
+
+	@Override
+	public AlbumUpdateQuery addTrack(TrackSlot trackSlot) {
+		addTrack(trackSlot.getTrack(), trackSlot.getNumber(), trackSlot.getDisc());
 		return this;
 	}
 

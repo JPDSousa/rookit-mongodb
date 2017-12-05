@@ -73,11 +73,13 @@ class DBManagerImpl implements DBManager{
 
 	@Override
 	public void addAlbum(final Album album) {
+		album.getCover().setBucketName(COVER_BUCKET);
 		smof.insert(album);
 	}
 
 	@Override
 	public void addArtist(final Artist artist) {
+		artist.getPicture().setBucketName(PICTURE_BUCKET);
 		smof.insert(artist);
 	}
 	
@@ -93,6 +95,7 @@ class DBManagerImpl implements DBManager{
 	
 	@Override
 	public void addTrack(final Track track) {
+		track.getPath().setBucketName(AUDIO_BUCKET);
 		smof.insert(track);
 	}
 
@@ -213,9 +216,9 @@ class DBManagerImpl implements DBManager{
 		smof.loadCollection(PLAYLISTS, Playlist.class, PlaylistFactory.getDefault(), getPlaylistOptions());
 		smof.loadCollection(IGNORED, IgnoreField.class, getIngoredOptions());
 		smof.loadCollection(TRACK_FORMATS, TrackFormat.class, getTFormatOptions());
-		smof.loadBucket(Track.AUDIO);
-		smof.loadBucket(Album.COVER_BUCKET);
-		smof.loadBucket(Artist.PICTURE_BUCKET);
+		smof.loadBucket(AUDIO_BUCKET);
+		smof.loadBucket(COVER_BUCKET);
+		smof.loadBucket(PICTURE_BUCKET);
 	}
 
 	@Override
