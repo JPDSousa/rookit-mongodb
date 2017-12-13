@@ -120,20 +120,30 @@ class DBManagerImpl implements DBManager{
 		}
 	}
 
-	private CollectionOptions<Album> getAlbumOptions() {
-		final CollectionOptions<Album> options = CollectionOptions.create();
-		options.upsert(true);
-		return options;
-	}
-
 	@Override
 	public AlbumQuery getAlbums() {
 		return queryFactory.createAlbumQuery(smof.find(Album.class));
 	}
 
+	private CollectionOptions<Album> getAlbumOptions() {
+		final CollectionOptions<Album> options = CollectionOptions.create();
+		options.upsert(true);
+		options.addPreHook(album -> {
+			if(album.getCover() != null) {
+				album.getCover().setBucketName(COVER_BUCKET);
+			}
+		});
+		return options;
+	}
+
 	private CollectionOptions<Artist> getArtistOptions() {
 		final CollectionOptions<Artist> options = CollectionOptions.create();
 		options.upsert(true);
+		options.addPreHook(artist -> {
+			if(artist.getPicture() != null) {
+				artist.getPicture().setBucketName(PICTURE_BUCKET);
+			}
+		});
 		return options;
 	}
 
@@ -199,6 +209,11 @@ class DBManagerImpl implements DBManager{
 	private CollectionOptions<Track> getTrackOptions() {
 		final CollectionOptions<Track> options = CollectionOptions.create();
 		options.upsert(false);
+		options.addPreHook(track -> {
+			if(track.getPath() != null) {
+				track.getPath().setBucketName(AUDIO_BUCKET);
+			}
+		});
 		return options;
 	}
 
