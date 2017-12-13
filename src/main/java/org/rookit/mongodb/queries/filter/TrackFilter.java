@@ -18,9 +18,6 @@ public interface TrackFilter<Q extends TrackFilter<Q>> extends GenreableFilter<Q
 	
 	Q withProducer(Artist artist);
 	
-	Q withBPM(int bpm);
-	Q withBPM(int min, int max);
-	
 	Q withLyrics(String lyrics);
 	Q withLyrics(Pattern regex);
 	

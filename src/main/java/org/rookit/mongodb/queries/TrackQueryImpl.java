@@ -23,7 +23,12 @@ package org.rookit.mongodb.queries;
 
 import org.rookit.dm.artist.Artist;
 import org.rookit.dm.track.Track;
+import org.rookit.dm.track.audio.TrackKey;
+import org.rookit.dm.track.audio.TrackMode;
 import org.smof.collection.ParentQuery;
+
+import com.google.common.collect.BoundType;
+import com.google.common.collect.Range;
 
 import static org.rookit.dm.track.DatabaseFields.*;
 
@@ -85,19 +90,6 @@ class TrackQueryImpl extends AbstractGenreableQuery<Track, TrackQuery> implement
 	}
 
 	@Override
-	public TrackQuery withBPM(int min, int max) {
-		query.withFieldGreater(BPM, min, INCLUDE_BOUND)
-		.withFieldSmaller(BPM, max, INCLUDE_BOUND);
-		return this;
-	}
-
-	@Override
-	public TrackQuery withBPM(int bpm) {
-		query.withFieldEquals(BPM, bpm);
-		return this;
-	}
-
-	@Override
 	public TrackQuery withLyrics(String lyrics) {
 		query.withFieldEquals(LYRICS, lyrics);
 		return this;
@@ -136,6 +128,78 @@ class TrackQueryImpl extends AbstractGenreableQuery<Track, TrackQuery> implement
 	@Override
 	public TrackQuery withVersionToken(Pattern regex) {
 		query.withFieldEquals(VERSION_TOKEN, regex);
+		return this;
+	}
+
+	@Override
+	public TrackQuery withBPM(short min, short max) {
+		query.withFieldGreater(BPM, min, INCLUDE_BOUND)
+		.withFieldSmaller(BPM, max, INCLUDE_BOUND);
+		return this;
+	}
+
+	@Override
+	public TrackQuery withBPM(short bpm) {
+		query.withFieldEquals(BPM, bpm);
+		return this;
+	}
+
+	@Override
+	public TrackQuery withBPM(Range<Short> range) {
+		if(range.hasLowerBound()) {
+			query.withFieldGreater(BPM, range.lowerEndpoint(), range.lowerBoundType() == BoundType.OPEN);
+		}
+		if(range.hasUpperBound()) {
+			query.withFieldSmaller(BPM, range.upperEndpoint(), range.upperBoundType() == BoundType.OPEN);
+		}
+		return this;
+	}
+
+	@Override
+	public TrackQuery withTrackKey(TrackKey key) {
+		query.withFieldEquals(KEY, key);
+		return this;
+	}
+
+	@Override
+	public TrackQuery withTrackMode(TrackMode mode) {
+		query.withFieldEquals(MODE, mode);
+		return this;
+	}
+
+	@Override
+	public TrackQuery withInstrumental(boolean instrumental) {
+		query.withFieldEquals(INSTRUMENTAL, instrumental);
+		return this;
+	}
+
+	@Override
+	public TrackQuery withLive(boolean live) {
+		query.withFieldEquals(LIVE, live);
+		return this;
+	}
+
+	@Override
+	public TrackQuery withAcoustic(boolean acoustic) {
+		query.withFieldEquals(ACOUSTIC, acoustic);
+		return this;
+	}
+
+	@Override
+	public TrackQuery withDanceability(double danceability) {
+		query.withFieldEquals(DANCEABILITY, danceability);
+		return this;
+	}
+
+	@Override
+	public TrackQuery withEnergy(double energy) {
+		query.withFieldEquals(ENERGY, energy);
+		return this;
+	}
+
+	@Override
+	public TrackQuery withValence(double valence) {
+		query.withFieldEquals(VALENCE, valence);
 		return this;
 	}
 	
