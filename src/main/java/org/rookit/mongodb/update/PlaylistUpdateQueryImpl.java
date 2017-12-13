@@ -20,7 +20,7 @@ class PlaylistUpdateQueryImpl extends AbstractPlayableUpdateQuery<Playlist, Play
 	}
 
 	@Override
-	public PlaylistUpdateQuery addTrack(Track track) {
+	public PlaylistUpdateQuery add(Track track) {
 		query.addToSet(TRACKS, track);
 		return this;
 	}

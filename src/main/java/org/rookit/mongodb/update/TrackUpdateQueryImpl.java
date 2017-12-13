@@ -5,6 +5,8 @@ import java.util.Set;
 import org.rookit.dm.artist.Artist;
 import org.rookit.dm.track.Track;
 import org.rookit.dm.track.TrackTitle;
+import org.rookit.dm.track.audio.TrackKey;
+import org.rookit.dm.track.audio.TrackMode;
 import org.rookit.mongodb.queries.TrackQuery;
 import org.smof.collection.SmofUpdate;
 
@@ -90,6 +92,54 @@ class TrackUpdateQueryImpl extends AbstractGenreableUpdateQuery<Track, TrackQuer
 	@Override
 	public TrackUpdateQuery setExplicit(boolean explicit) {
 		query.set(EXPLICIT, explicit);
+		return this;
+	}
+
+	@Override
+	public TrackUpdateQuery setTrackKey(TrackKey trackKey) {
+		query.set(KEY, trackKey);
+		return this;
+	}
+
+	@Override
+	public TrackUpdateQuery setTrackMode(TrackMode trackMode) {
+		query.set(MODE, trackMode);
+		return this;
+	}
+
+	@Override
+	public TrackUpdateQuery setInstrumental(boolean isInstrumental) {
+		query.set(INSTRUMENTAL, isInstrumental);
+		return this;
+	}
+
+	@Override
+	public TrackUpdateQuery setLive(boolean isLive) {
+		query.set(LIVE, isLive);
+		return this;
+	}
+
+	@Override
+	public TrackUpdateQuery setAcoustic(boolean isAcoustic) {
+		query.set(ACOUSTIC, isAcoustic);
+		return this;
+	}
+
+	@Override
+	public TrackUpdateQuery setDanceability(double danceability) {
+		query.set(DANCEABILITY, danceability);
+		return this;
+	}
+
+	@Override
+	public TrackUpdateQuery setEnergy(double energy) {
+		query.set(ENERGY, energy);
+		return this;
+	}
+
+	@Override
+	public TrackUpdateQuery setValence(double valence) {
+		query.set(VALENCE, valence);
 		return this;
 	}
 
