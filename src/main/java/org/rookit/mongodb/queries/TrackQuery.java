@@ -25,7 +25,7 @@ import org.rookit.dm.track.Track;
 import org.rookit.mongodb.queries.filter.TrackFilter;
 
 @SuppressWarnings("javadoc")
-public interface TrackQuery extends GenreableQuery<Track, TrackQuery>, TrackFilter<TrackQuery>, AudioFeaturesFilter<TrackQuery> {
+public interface TrackQuery extends GenreableQuery<Track, TrackQuery>, TrackFilter<TrackQuery> {
 	
 	//
 	

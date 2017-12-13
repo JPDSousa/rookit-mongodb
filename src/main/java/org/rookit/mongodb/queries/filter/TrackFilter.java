@@ -5,9 +5,10 @@ import java.util.regex.Pattern;
 import org.bson.types.ObjectId;
 import org.rookit.dm.artist.Artist;
 import org.rookit.dm.track.Track;
+import org.rookit.mongodb.queries.AudioFeaturesFilter;
 
 @SuppressWarnings("javadoc")
-public interface TrackFilter<Q extends TrackFilter<Q>> extends GenreableFilter<Q> {
+public interface TrackFilter<Q extends TrackFilter<Q>> extends GenreableFilter<Q>, AudioFeaturesFilter<Q> {
 	
 	Q withTitle(String title);
 	Q withTitle(Pattern regex);

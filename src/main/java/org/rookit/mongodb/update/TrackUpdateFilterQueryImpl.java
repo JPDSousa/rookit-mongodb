@@ -5,8 +5,12 @@ import java.util.regex.Pattern;
 import org.bson.types.ObjectId;
 import org.rookit.dm.artist.Artist;
 import org.rookit.dm.track.Track;
+import org.rookit.dm.track.audio.TrackKey;
+import org.rookit.dm.track.audio.TrackMode;
 import org.rookit.mongodb.queries.TrackQuery;
 import org.smof.collection.SmofUpdateQuery;
+
+import com.google.common.collect.Range;
 
 class TrackUpdateFilterQueryImpl extends AbstractGenreableUpdateFilterQuery<Track, TrackQuery, TrackUpdateFilterQuery> implements TrackUpdateFilterQuery {
 
@@ -48,13 +52,13 @@ class TrackUpdateFilterQueryImpl extends AbstractGenreableUpdateFilterQuery<Trac
 	}
 
 	@Override
-	public TrackUpdateFilterQuery withBPM(int bpm) {
+	public TrackUpdateFilterQuery withBPM(short bpm) {
 		filter.withBPM(bpm);
 		return this;
 	}
 
 	@Override
-	public TrackUpdateFilterQuery withBPM(int min, int max) {
+	public TrackUpdateFilterQuery withBPM(short min, short max) {
 		filter.withBPM(min, max);
 		return this;
 	}
@@ -116,6 +120,60 @@ class TrackUpdateFilterQueryImpl extends AbstractGenreableUpdateFilterQuery<Trac
 	@Override
 	public TrackUpdateFilterQuery withVersionToken(Pattern regex) {
 		filter.withVersionToken(regex);
+		return this;
+	}
+
+	@Override
+	public TrackUpdateFilterQuery withBPM(Range<Short> range) {
+		filter.withBPM(range);
+		return this;
+	}
+
+	@Override
+	public TrackUpdateFilterQuery withTrackKey(TrackKey key) {
+		filter.withTrackKey(key);
+		return this;
+	}
+
+	@Override
+	public TrackUpdateFilterQuery withTrackMode(TrackMode mode) {
+		filter.withTrackMode(mode);
+		return this;
+	}
+
+	@Override
+	public TrackUpdateFilterQuery withInstrumental(boolean instrumental) {
+		filter.withInstrumental(instrumental);
+		return this;
+	}
+
+	@Override
+	public TrackUpdateFilterQuery withLive(boolean live) {
+		filter.withLive(live);
+		return this;
+	}
+
+	@Override
+	public TrackUpdateFilterQuery withAcoustic(boolean acoustic) {
+		filter.withAcoustic(acoustic);
+		return this;
+	}
+
+	@Override
+	public TrackUpdateFilterQuery withDanceability(double danceability) {
+		filter.withDanceability(danceability);
+		return this;
+	}
+
+	@Override
+	public TrackUpdateFilterQuery withEnergy(double energy) {
+		filter.withEnergy(energy);
+		return this;
+	}
+
+	@Override
+	public TrackUpdateFilterQuery withValence(double valence) {
+		filter.withValence(valence);
 		return this;
 	}
 
