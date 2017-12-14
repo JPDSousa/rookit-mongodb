@@ -90,7 +90,7 @@ class TrackUpdateQueryImpl extends AbstractGenreableUpdateQuery<Track, TrackQuer
 	}
 
 	@Override
-	public TrackUpdateQuery setExplicit(boolean explicit) {
+	public TrackUpdateQuery setExplicit(Boolean explicit) {
 		query.set(EXPLICIT, explicit);
 		return this;
 	}
@@ -108,19 +108,19 @@ class TrackUpdateQueryImpl extends AbstractGenreableUpdateQuery<Track, TrackQuer
 	}
 
 	@Override
-	public TrackUpdateQuery setInstrumental(boolean isInstrumental) {
+	public TrackUpdateQuery setInstrumental(Boolean isInstrumental) {
 		query.set(INSTRUMENTAL, isInstrumental);
 		return this;
 	}
 
 	@Override
-	public TrackUpdateQuery setLive(boolean isLive) {
+	public TrackUpdateQuery setLive(Boolean isLive) {
 		query.set(LIVE, isLive);
 		return this;
 	}
 
 	@Override
-	public TrackUpdateQuery setAcoustic(boolean isAcoustic) {
+	public TrackUpdateQuery setAcoustic(Boolean isAcoustic) {
 		query.set(ACOUSTIC, isAcoustic);
 		return this;
 	}
