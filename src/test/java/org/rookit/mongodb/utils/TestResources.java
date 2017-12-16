@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import org.rookit.mongodb.DBManager;
 import org.rookit.utils.resource.Resources;
 
 @SuppressWarnings("javadoc")
@@ -35,6 +36,14 @@ public class TestResources {
 
 	public static final Path COVERS = Resources.RESOURCES_TEST.resolve("covers");
 	public static final Path TRACKS = Resources.RESOURCES_TEST.resolve("tracks");
+	
+	private static final String HOST = "localhost";
+	private static final int PORT = 27020;
+	private static final String DB_NAME = "rookit_test";
+	
+	public static DBManager createTestConnection() {
+		return DBManager.open(HOST, PORT, DB_NAME);
+	}
 	
 	public static final List<Path> getCoverPaths() throws IOException {
 		return listAsList(COVERS);

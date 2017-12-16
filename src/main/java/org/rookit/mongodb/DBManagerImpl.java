@@ -205,7 +205,7 @@ class DBManagerImpl implements DBManager{
 
 	private CollectionOptions<Track> getTrackOptions() {
 		final CollectionOptions<Track> options = CollectionOptions.create();
-		options.upsert(false);
+		options.upsert(true);
 		options.addPreHook(track -> {
 			if(track.getPath() != null) {
 				track.getPath().setBucketName(AUDIO_BUCKET);

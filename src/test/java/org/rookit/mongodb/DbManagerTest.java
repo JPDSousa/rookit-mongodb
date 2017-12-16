@@ -38,27 +38,26 @@ import org.rookit.dm.album.Album;
 import org.rookit.dm.artist.Artist;
 import org.rookit.dm.genre.Genre;
 import org.rookit.dm.track.Track;
-import org.rookit.dm.utils.DMTestFactory;
+import org.rookit.dm.track.TrackFactory;
+import org.rookit.dm.track.TypeVersion;
+import org.rookit.dm.track.VersionTrack;
+import org.rookit.dm.test.DMTestFactory;
 import org.rookit.mongodb.DBManager;
 import org.rookit.mongodb.utils.TestResources;
 import org.smof.gridfs.SmofGridRef;
 
-import com.google.common.collect.Sets;
-
 @SuppressWarnings("javadoc")
-public class DbManagerTest {
-	
-	private static final String HOST = "localhost";
-	private static final int PORT = 27020;
-	private static final String DB_NAME = "rookit_test";
+public class DBManagerTest {
 	
 	private static DBManager guineaPig;
 	private static DMTestFactory factory;
+	private static TrackFactory trackFactory;
 	
 	@BeforeClass
 	public static final void setUp() {
-		guineaPig = DBManager.open(HOST, PORT, DB_NAME);
+		guineaPig = TestResources.createTestConnection();
 		factory = DMTestFactory.getDefault();
+		trackFactory = TrackFactory.getDefault();
 	}
 	
 	@AfterClass
@@ -78,7 +77,7 @@ public class DbManagerTest {
 	
 	@Test
 	public final void testAddTrack() throws IOException {
-		final Track expected = factory.getRandomTrack();
+		final Track expected = factory.getRandomOriginalTrack();
 		final Path path = TestResources.getRandomTrackPath();
 		final SmofGridRef dbRef = expected.getPath();
 		dbRef.attachFile(path);
@@ -91,11 +90,30 @@ public class DbManagerTest {
 	}
 	
 	@Test
+	public final void testAddRemix() {
+		final Track original = trackFactory.createOriginalTrack("I'm original");
+		final VersionTrack remix1 = trackFactory.createVersionTrack(TypeVersion.REMIX, original);
+		final VersionTrack remix2 = trackFactory.createVersionTrack(TypeVersion.REMIX, original);
+		final VersionTrack acoustic1 = trackFactory.createVersionTrack(TypeVersion.ACOUSTIC, original);
+		final Set<Artist> remixA1 = factory.getRandomSetOfArtists();
+		final Set<Artist> remixA2 = factory.getRandomUniqueSetOfArtists(remixA1);
+		remix1.setVersionArtists(remixA1);
+		remix2.setVersionArtists(remixA2);
+		guineaPig.addTrack(original);
+		guineaPig.addTrack(remix1);
+		guineaPig.addTrack(remix2);
+		guineaPig.addTrack(acoustic1);
+		assertEquals(4, guineaPig.getTracks().count());
+	}
+	
+	@Test
 	public final void testAddDuplicateTrack() throws IOException {
 		final Set<Artist> mainArtists = factory.getRandomSetOfArtists();
 		final String title = factory.randomString();
-		final Track expected = factory.createOriginalTrack(title, mainArtists, Sets.newLinkedHashSet(), Sets.newLinkedHashSet());
-		final Track expectedDup = factory.createOriginalTrack(title, mainArtists, Sets.newLinkedHashSet(), Sets.newLinkedHashSet());
+		final Track expected = trackFactory.createOriginalTrack(title);
+		final Track expectedDup = trackFactory.createOriginalTrack(title);
+		expected.setMainArtists(mainArtists);
+		expectedDup.setMainArtists(mainArtists);
 		assertEquals("Both tracks must be equal in order for the test to make sense", expected, expectedDup);
 		final List<Path> paths = TestResources.getTrackPaths();
 		assertTrue("Not enought track paths", paths.size() >= 2);
