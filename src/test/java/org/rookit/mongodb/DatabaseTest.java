@@ -47,7 +47,7 @@ import org.rookit.mongodb.utils.TestResources;
 import org.smof.gridfs.SmofGridRef;
 
 @SuppressWarnings("javadoc")
-public class DBManagerTest {
+public class DatabaseTest {
 	
 	private static DBManager guineaPig;
 	private static DMTestFactory factory;
