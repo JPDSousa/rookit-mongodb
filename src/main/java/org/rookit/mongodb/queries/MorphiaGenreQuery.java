@@ -21,40 +21,41 @@
  ******************************************************************************/
 package org.rookit.mongodb.queries;
 
+import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.query.Query;
 import org.rookit.dm.genre.Genre;
-import org.smof.collection.ParentQuery;
 
 import static org.rookit.dm.genre.DatabaseFields.*;
 
 import java.util.regex.Pattern;
 
-class GenreQueryImpl extends AbstractPlayableQuery<Genre, GenreQuery> implements GenreQuery {
+class MorphiaGenreQuery extends AbstractPlayableQuery<Genre, GenreQuery> implements GenreQuery {
 
-	public GenreQueryImpl(ParentQuery<Genre> query) {
-		super(query);
+	public MorphiaGenreQuery(Datastore datastore, Query<Genre> query) {
+		super(datastore, query);
 	}
 	
 	@Override
 	public GenreQuery withName(String genreName) {
-		query.withFieldEquals(NAME, genreName);
+		query.field(NAME).equalIgnoreCase(genreName);
 		return this;
 	}
 	
 	@Override
 	public GenreQuery withName(Pattern regex) {
-		query.withFieldRegex(NAME, regex);
+		query.field(NAME).equal(regex);
 		return this;
 	}
 
 	@Override
 	public GenreQuery withDescription(String description) {
-		query.withFieldEquals(DESCRIPTION, description);
+		query.field(DESCRIPTION).containsIgnoreCase(description);
 		return this;
 	}
 
 	@Override
 	public GenreQuery withDescription(Pattern regex) {
-		query.withFieldRegex(DESCRIPTION, regex);
+		query.field(DESCRIPTION).equal(regex);
 		return this;
 	}
 

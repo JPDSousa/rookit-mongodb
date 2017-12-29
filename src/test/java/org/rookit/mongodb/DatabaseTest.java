@@ -22,15 +22,18 @@
 package org.rookit.mongodb;
 
 import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.*;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -41,52 +44,57 @@ import org.rookit.dm.track.Track;
 import org.rookit.dm.track.TrackFactory;
 import org.rookit.dm.track.TypeVersion;
 import org.rookit.dm.track.VersionTrack;
+import org.rookit.dm.utils.bistream.BiStream;
 import org.rookit.dm.test.DMTestFactory;
 import org.rookit.mongodb.DBManager;
+import org.rookit.mongodb.gridfs.GridFsBiStream;
 import org.rookit.mongodb.utils.TestResources;
-import org.smof.gridfs.SmofGridRef;
+
+import com.mongodb.client.gridfs.model.GridFSFile;
 
 @SuppressWarnings("javadoc")
 public class DatabaseTest {
 	
-	private static DBManager guineaPig;
+	private DBManager guineaPig;
 	private static DMTestFactory factory;
 	private static TrackFactory trackFactory;
 	
 	@BeforeClass
 	public static final void setUp() {
-		guineaPig = TestResources.createTestConnection();
 		factory = DMTestFactory.getDefault();
 		trackFactory = TrackFactory.getDefault();
 	}
 	
-	@AfterClass
-	public static final void drop() throws IOException {
-		guineaPig.close();
-	}
-	
 	@Before
 	public final void beforeTest() {
-		guineaPig.init();
+		guineaPig = TestResources.createTestConnection();
 	}
 	
 	@After
-	public final void afterTest() {
+	public final void afterTest() throws IOException {
 		guineaPig.clear();
+		guineaPig.close();
 	}
 	
 	@Test
 	public final void testAddTrack() throws IOException {
 		final Track expected = factory.getRandomOriginalTrack();
-		final Path path = TestResources.getRandomTrackPath();
-		final SmofGridRef dbRef = expected.getPath();
-		dbRef.attachFile(path);
+		final byte[] bytes = Files.readAllBytes(TestResources.getRandomTrackPath());
+		final BiStream dbRef = expected.getPath();
+		
+		final OutputStream output = dbRef.toOutput();
+		output.write(bytes);
+		output.close();
 		guineaPig.addTrack(expected);
-		final Track actual = guineaPig.getTracks().byElement(expected);
+		final Track actual = guineaPig.getTracks()
+				.withId(expected.getId())
+				.first();
 		assertEquals(expected, actual);
-		final byte[] expectedContent = Files.readAllBytes(path);
-		final byte[] actualContent = guineaPig.download(actual.getPath());
-		assertArrayEquals(expectedContent, actualContent);
+		final byte[] actualContent = new byte[bytes.length];
+		final InputStream input = actual.getPath().toInput();
+		input.read(actualContent);
+		input.close();
+		assertArrayEquals(bytes, actualContent);
 	}
 	
 	@Test
@@ -108,19 +116,24 @@ public class DatabaseTest {
 	
 	@Test
 	public final void testAddDuplicateTrack() throws IOException {
+		final List<Path> paths = TestResources.getTrackPaths();
 		final Set<Artist> mainArtists = factory.getRandomSetOfArtists();
 		final String title = factory.randomString();
 		final Track expected = trackFactory.createOriginalTrack(title);
 		final Track expectedDup = trackFactory.createOriginalTrack(title);
+		final BiStream dbRef1 = expected.getPath();
+		final BiStream dbRef2 = expectedDup.getPath();
+		final OutputStream output1 = dbRef1.toOutput();
+		final OutputStream output2 = dbRef2.toOutput();
+		
 		expected.setMainArtists(mainArtists);
 		expectedDup.setMainArtists(mainArtists);
 		assertEquals("Both tracks must be equal in order for the test to make sense", expected, expectedDup);
-		final List<Path> paths = TestResources.getTrackPaths();
 		assertTrue("Not enought track paths", paths.size() >= 2);
-		final SmofGridRef dbRef1 = expected.getPath();
-		final SmofGridRef dbRef2 = expectedDup.getPath();
-		dbRef1.attachFile(paths.get(0));
-		dbRef2.attachFile(paths.get(1));
+		output1.write(Files.readAllBytes(paths.get(0)));
+		output1.close();
+		output2.write(Files.readAllBytes(paths.get(1)));
+		output2.close();
 		guineaPig.addTrack(expected);
 		guineaPig.addTrack(expectedDup);
 		assertEquals(1, guineaPig.getTracks().count());
@@ -130,29 +143,60 @@ public class DatabaseTest {
 	public final void testAddGenre() {
 		final Genre expected = factory.getRandomGenre();
 		guineaPig.addGenre(expected);
-		final Genre actual = guineaPig.getGenres().byElement(expected);
+		final Genre actual = guineaPig.getGenres()
+				.withId(expected.getId())
+				.first();
 		assertEquals(expected, actual);
 	}
 	
 	@Test
 	public final void testAddAlbum() throws IOException {
+		// preparing data
 		final Album expected = factory.getRandomAlbum();
-		final Path randomCoverPath = TestResources.getRandomCoverPath();
-		final byte[] expectedContent = Files.readAllBytes(randomCoverPath);
-		expected.getCover().attachFile(randomCoverPath);
+		final byte[] expectedContent = Files.readAllBytes(TestResources.getRandomCoverPath());
+		final OutputStream output = expected.getCover().toOutput();
+		output.write(expectedContent);
+		output.close();
 		guineaPig.addAlbum(expected);
-		final Album actual = guineaPig.getAlbums().byElement(expected);
-		final byte[] actualContent = guineaPig.download(actual.getCover());
+		
+		// assertions
+		final Album actual = guineaPig.getAlbums().withId(expected.getId()).first();
 		assertEquals(expected, actual);
+		
+		// stream
+		assertThat(actual.getCover(), is(instanceOf(GridFsBiStream.class)));
+		final GridFsBiStream stream = (GridFsBiStream) actual.getCover();
+		
+		// gridfs file
+		final GridFSFile file = stream.getMetadata();
+		assertEquals(expectedContent.length, file.getLength());
+		
+		// readTo
+		final ByteArrayOutputStream arrayOut = new ByteArrayOutputStream(expectedContent.length);
+		stream.readTo(arrayOut);
+		assertArrayEquals(expectedContent, arrayOut.toByteArray());
+		
+		// toInput
+		final byte[] actualContent = new byte[expectedContent.length];
+		final InputStream input = actual.getCover().toInput();
+		assertEquals(expectedContent.length, actualContent.length);
+		input.read(actualContent);
+		input.close();
 		assertArrayEquals(expectedContent, actualContent);
 	}
+	
+	
 	
 	@Test
 	public final void testAddArtist() {
 		final Artist expected = factory.getRandomArtist();
+		expected.setGenres(factory.getRandomSetOfGenres());
 		guineaPig.addArtist(expected);
-		final Artist actual = guineaPig.getArtists().byElement(expected);
+		final Artist actual = guineaPig.getArtists()
+				.withId(expected.getId())
+				.first();
 		assertEquals(expected, actual);
+		assertEquals(expected.getGenres(), actual.getGenres());
 	}
 
 }

@@ -1,16 +1,16 @@
 package org.rookit.mongodb.update;
 
 import org.bson.types.ObjectId;
+import org.mongodb.morphia.query.UpdateOperations;
 import org.rookit.dm.genre.Genre;
 import org.rookit.dm.genre.Genreable;
 import org.rookit.mongodb.queries.GenreableQuery;
-import org.smof.collection.SmofUpdateQuery;
 
 abstract class AbstractGenreableUpdateFilterQuery<E extends Genreable, Q extends GenreableQuery<E, Q>, U extends GenreableUpdateFilterQuery<U>> 
 	extends AbstractPlayableUpdateFilterQuery<E, Q, U> 
 	implements GenreableUpdateFilterQuery<U> {
 
-	protected AbstractGenreableUpdateFilterQuery(Q filter, SmofUpdateQuery<E> updateQuery) {
+	protected AbstractGenreableUpdateFilterQuery(Q filter, UpdateOperations<E> updateQuery) {
 		super(filter, updateQuery);
 	}
 

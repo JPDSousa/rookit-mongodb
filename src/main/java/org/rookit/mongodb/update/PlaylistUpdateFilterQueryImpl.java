@@ -1,14 +1,14 @@
 package org.rookit.mongodb.update;
 
+import org.mongodb.morphia.query.UpdateOperations;
 import org.rookit.dm.play.Playlist;
 import org.rookit.dm.track.Track;
 import org.rookit.mongodb.queries.PlaylistQuery;
-import org.smof.collection.SmofUpdateQuery;
 
 class PlaylistUpdateFilterQueryImpl extends AbstractPlayableUpdateFilterQuery<Playlist, PlaylistQuery, PlaylistUpdateFilterQuery>
 		implements PlaylistUpdateFilterQuery {
 
-	protected PlaylistUpdateFilterQueryImpl(PlaylistQuery filter, SmofUpdateQuery<Playlist> updateQuery) {
+	protected PlaylistUpdateFilterQueryImpl(PlaylistQuery filter, UpdateOperations<Playlist> updateQuery) {
 		super(filter, updateQuery);
 	}
 

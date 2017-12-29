@@ -3,20 +3,20 @@ package org.rookit.mongodb.update;
 import java.util.regex.Pattern;
 
 import org.bson.types.ObjectId;
+import org.mongodb.morphia.query.UpdateOperations;
 import org.rookit.dm.artist.Artist;
 import org.rookit.dm.track.Track;
 import org.rookit.dm.track.audio.TrackKey;
 import org.rookit.dm.track.audio.TrackMode;
 import org.rookit.mongodb.queries.TrackQuery;
-import org.smof.collection.SmofUpdateQuery;
 
 import com.google.common.collect.Range;
 
-class TrackUpdateFilterQueryImpl extends AbstractGenreableUpdateFilterQuery<Track, TrackQuery, TrackUpdateFilterQuery> implements TrackUpdateFilterQuery {
+class MorphiaTrackUpdateFilterQuery extends AbstractGenreableUpdateFilterQuery<Track, TrackQuery, TrackUpdateFilterQuery> implements TrackUpdateFilterQuery {
 
 	private final TrackQuery filter;
 	
-	protected TrackUpdateFilterQueryImpl(TrackQuery filter, SmofUpdateQuery<Track> updateQuery) {
+	protected MorphiaTrackUpdateFilterQuery(TrackQuery filter, UpdateOperations<Track> updateQuery) {
 		super(filter, updateQuery);
 		this.filter = filter;
 	}

@@ -3,16 +3,16 @@ package org.rookit.mongodb.update;
 import java.time.LocalDate;
 import java.util.regex.Pattern;
 
+import org.mongodb.morphia.query.UpdateOperations;
 import org.rookit.dm.album.Album;
 import org.rookit.dm.album.TypeAlbum;
 import org.rookit.dm.album.TypeRelease;
 import org.rookit.dm.artist.Artist;
 import org.rookit.mongodb.queries.AlbumQuery;
-import org.smof.collection.SmofUpdateQuery;
 
 class AlbumUpdateFilterQueryImpl extends AbstractGenreableUpdateFilterQuery<Album, AlbumQuery, AlbumUpdateFilterQuery> implements AlbumUpdateFilterQuery {
 
-	AlbumUpdateFilterQueryImpl(AlbumQuery filter, SmofUpdateQuery<Album> updateQuery) {
+	AlbumUpdateFilterQueryImpl(AlbumQuery filter, UpdateOperations<Album> updateQuery) {
 		super(filter, updateQuery);
 	}
 

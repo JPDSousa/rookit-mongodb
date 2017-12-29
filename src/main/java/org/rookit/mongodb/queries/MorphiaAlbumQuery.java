@@ -21,27 +21,64 @@
  ******************************************************************************/
 package org.rookit.mongodb.queries;
 
-import org.rookit.dm.play.Playlist;
-import org.rookit.dm.track.Track;
-import org.smof.collection.ParentQuery;
+import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.query.Query;
+import org.rookit.dm.album.Album;
+import org.rookit.dm.album.TypeAlbum;
+import org.rookit.dm.album.TypeRelease;
+import org.rookit.dm.artist.Artist;
 
-import static org.rookit.dm.play.DatabaseFields.*;
+import static org.rookit.dm.album.DatabaseFields.*;
 
-class PlaylistQueryImpl extends AbstractPlayableQuery<Playlist, PlaylistQuery> implements PlaylistQuery {
-	
-	PlaylistQueryImpl(ParentQuery<Playlist> query) {
-		super(query);
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.regex.Pattern;
+
+class MorphiaAlbumQuery extends AbstractGenreableQuery<Album, AlbumQuery> implements AlbumQuery {
+
+	MorphiaAlbumQuery(Datastore datastore, Query<Album> query) {
+		super(datastore, query);
 	}
-
+	
 	@Override
-	public PlaylistQuery withName(String name) {
-		query.withFieldEquals(NAME, name);
+	public AlbumQuery withTitle(String albumTitle) {
+		query.field(TITLE).equalIgnoreCase(albumTitle);
+		return this;
+	}
+	
+	@Override
+	public AlbumQuery withTitle(Pattern regex) {
+		query.field(TITLE).equal(regex);
 		return this;
 	}
 
 	@Override
-	public PlaylistQuery withTrack(Track track) {
-		query.withFieldEquals(TRACKS, track);
+	public AlbumQuery withType(TypeAlbum type) {
+		query.field(TYPE).equal(type);
+		return this;
+	}
+	
+	@Override
+	public AlbumQuery withReleaseType(TypeRelease type) {
+		query.field(RELEASE_TYPE).equal(type);
+		return this;
+	}
+
+	@Override
+	public AlbumQuery withAnyReleaseType(TypeRelease[] types) {
+		query.field(RELEASE_TYPE).in(Arrays.asList(types));
+		return this;
+	}
+
+	@Override
+	public AlbumQuery withArtist(Artist artist) {
+		query.field(ARTISTS).equal(artist.getId());
+		return this;
+	}
+
+	@Override
+	public AlbumQuery withReleaseDate(LocalDate date) {
+		query.field(RELEASE_DATE).equal(date);
 		return this;
 	}
 

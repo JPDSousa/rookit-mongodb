@@ -2,14 +2,14 @@ package org.rookit.mongodb.update;
 
 import java.util.regex.Pattern;
 
+import org.mongodb.morphia.query.UpdateOperations;
 import org.rookit.dm.genre.Genre;
 import org.rookit.mongodb.queries.GenreQuery;
-import org.smof.collection.SmofUpdateQuery;
 
 class GenreUpdateFilterQueryImpl extends AbstractPlayableUpdateFilterQuery<Genre, GenreQuery, GenreUpdateFilterQuery>
 		implements GenreUpdateFilterQuery {
 
-	protected GenreUpdateFilterQueryImpl(GenreQuery filter, SmofUpdateQuery<Genre> updateQuery) {
+	protected GenreUpdateFilterQueryImpl(GenreQuery filter, UpdateOperations<Genre> updateQuery) {
 		super(filter, updateQuery);
 	}
 

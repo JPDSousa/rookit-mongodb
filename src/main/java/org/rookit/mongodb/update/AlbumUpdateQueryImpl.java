@@ -3,26 +3,26 @@ package org.rookit.mongodb.update;
 import java.time.LocalDate;
 import java.util.Set;
 
+import org.mongodb.morphia.query.UpdateOperations;
 import org.rookit.dm.album.Album;
 import org.rookit.dm.album.TrackSlot;
 import org.rookit.dm.artist.Artist;
 import org.rookit.dm.track.Track;
 import org.rookit.mongodb.queries.AlbumQuery;
 import org.rookit.utils.exception.InvalidOperationException;
-import org.smof.collection.SmofUpdate;
 
 import static org.rookit.dm.album.DatabaseFields.*;
 
 
 class AlbumUpdateQueryImpl extends AbstractGenreableUpdateQuery<Album, AlbumQuery, AlbumUpdateQuery, AlbumUpdateFilterQuery>implements AlbumUpdateQuery {
 	
-	AlbumUpdateQueryImpl(SmofUpdate<Album> smofUpdateQuery, AlbumQuery filter) {
+	AlbumUpdateQueryImpl(UpdateOperations<Album> smofUpdateQuery, AlbumQuery filter) {
 		super(smofUpdateQuery, filter);
 	}
 
 	@Override
 	public AlbumUpdateFilterQuery where() {
-		return new AlbumUpdateFilterQueryImpl(filter, query.where());
+		return new AlbumUpdateFilterQueryImpl(filter, query);
 	}
 
 	@Override

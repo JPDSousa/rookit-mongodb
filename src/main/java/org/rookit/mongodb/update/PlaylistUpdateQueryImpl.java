@@ -4,19 +4,20 @@ import org.rookit.dm.play.Playlist;
 import org.rookit.dm.track.Track;
 import org.rookit.mongodb.queries.PlaylistQuery;
 import org.rookit.utils.exception.InvalidOperationException;
-import org.smof.collection.SmofUpdate;
 
 import static org.rookit.dm.play.DatabaseFields.*;
 
+import org.mongodb.morphia.query.UpdateOperations;
+
 class PlaylistUpdateQueryImpl extends AbstractPlayableUpdateQuery<Playlist, PlaylistQuery, PlaylistUpdateQuery, PlaylistUpdateFilterQuery> implements PlaylistUpdateQuery {
 
-	PlaylistUpdateQueryImpl(SmofUpdate<Playlist> query, PlaylistQuery filter) {
+	PlaylistUpdateQueryImpl(UpdateOperations<Playlist> query, PlaylistQuery filter) {
 		super(query, filter);
 	}
 
 	@Override
 	public PlaylistUpdateFilterQuery where() {
-		return new PlaylistUpdateFilterQueryImpl(filter, query.where());
+		return new PlaylistUpdateFilterQueryImpl(filter, query);
 	}
 
 	@Override

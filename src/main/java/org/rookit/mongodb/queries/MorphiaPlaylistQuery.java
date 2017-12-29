@@ -21,62 +21,29 @@
  ******************************************************************************/
 package org.rookit.mongodb.queries;
 
-import org.rookit.dm.album.Album;
-import org.rookit.dm.album.TypeAlbum;
-import org.rookit.dm.album.TypeRelease;
-import org.rookit.dm.artist.Artist;
-import org.smof.collection.ParentQuery;
+import org.rookit.dm.play.Playlist;
+import org.rookit.dm.track.Track;
 
-import static org.rookit.dm.album.DatabaseFields.*;
+import static org.rookit.dm.play.DatabaseFields.*;
 
-import java.time.LocalDate;
-import java.util.regex.Pattern;
+import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.query.Query;
 
-class AlbumQueryImpl extends AbstractGenreableQuery<Album, AlbumQuery> implements AlbumQuery {
-
-	AlbumQueryImpl(ParentQuery<Album> query) {
-		super(query);
-	}
+class MorphiaPlaylistQuery extends AbstractPlayableQuery<Playlist, PlaylistQuery> implements PlaylistQuery {
 	
-	@Override
-	public AlbumQuery withTitle(String albumTitle) {
-		query.withFieldEquals(TITLE, albumTitle);
-		return this;
+	MorphiaPlaylistQuery(Datastore datastore, Query<Playlist> query) {
+		super(datastore, query);
 	}
-	
+
 	@Override
-	public AlbumQuery withTitle(Pattern regex) {
-		query.withFieldRegex(TITLE, regex);
+	public PlaylistQuery withName(String name) {
+		query.field(NAME).equalIgnoreCase(name);
 		return this;
 	}
 
 	@Override
-	public AlbumQuery withType(TypeAlbum type) {
-		query.withFieldEquals(TYPE, type);
-		return this;
-	}
-	
-	@Override
-	public AlbumQuery withReleaseType(TypeRelease type) {
-		query.withFieldEquals(RELEASE_TYPE, type);
-		return this;
-	}
-
-	@Override
-	public AlbumQuery withAnyReleaseType(TypeRelease[] types) {
-		query.withFieldIn(RELEASE_TYPE, toObjectArray(types));
-		return this;
-	}
-
-	@Override
-	public AlbumQuery withArtist(Artist artist) {
-		query.withFieldEquals(ARTISTS, artist.getId());
-		return this;
-	}
-
-	@Override
-	public AlbumQuery withReleaseDate(LocalDate date) {
-		query.withFieldEquals(RELEASE_DATE, date);
+	public PlaylistQuery withTrack(Track track) {
+		query.field(TRACKS).equal(track.getId());
 		return this;
 	}
 
