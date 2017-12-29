@@ -22,7 +22,6 @@
 package org.rookit.mongodb;
 
 import java.io.Closeable;
-import java.io.InputStream;
 import java.util.stream.Stream;
 
 import org.rookit.dm.album.Album;
@@ -42,7 +41,6 @@ import org.rookit.mongodb.update.ArtistUpdateQuery;
 import org.rookit.mongodb.update.GenreUpdateQuery;
 import org.rookit.mongodb.update.PlaylistUpdateQuery;
 import org.rookit.mongodb.update.TrackUpdateQuery;
-import org.smof.gridfs.SmofGridRef;
 
 @SuppressWarnings("javadoc")
 public interface DBManager extends Closeable{
@@ -52,22 +50,13 @@ public interface DBManager extends Closeable{
 	String DB_NAME = "rookit";
 	
 	static DBManager open(String host, int port, String dbName) {
-		return new DBManagerImpl(host, port, dbName);
+		return new RookitMorphia(host, port, dbName);
 	}
 	
 	static DBManager open() {
 		return open(HOST, PORT, DB_NAME);
 	}
 	
-	String GENRES = "Genres";
-	String ARTISTS = "Artists";
-	String ALBUMS = "Albums";
-	String TRACKS = "Tracks";
-	String PLAYLISTS = "Playlists";
-	
-	String IGNORED = "Ignored";
-	String TRACK_FORMATS = "TFormats";
-
 	String AUDIO_BUCKET = "audio";
 	String COVER_BUCKET = "album_covers";
 	String PICTURE_BUCKET = "artist_pictures";
@@ -77,10 +66,6 @@ public interface DBManager extends Closeable{
 	void init();
 	void clear();
 	
-	void loadBucket(String bucketName);
-	byte[] download(SmofGridRef ref);
-	InputStream stream(SmofGridRef ref);
-
 	void addAlbum(Album album);
 	void addGenre(Genre genre);
 	void addTrack(Track track);
