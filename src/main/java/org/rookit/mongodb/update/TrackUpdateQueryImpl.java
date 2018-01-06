@@ -2,25 +2,25 @@ package org.rookit.mongodb.update;
 
 import java.util.Set;
 
+import org.mongodb.morphia.query.UpdateOperations;
 import org.rookit.dm.artist.Artist;
 import org.rookit.dm.track.Track;
 import org.rookit.dm.track.TrackTitle;
 import org.rookit.dm.track.audio.TrackKey;
 import org.rookit.dm.track.audio.TrackMode;
 import org.rookit.mongodb.queries.TrackQuery;
-import org.smof.collection.SmofUpdate;
 
 import static org.rookit.dm.track.DatabaseFields.*;
 
 class TrackUpdateQueryImpl extends AbstractGenreableUpdateQuery<Track, TrackQuery, TrackUpdateQuery, TrackUpdateFilterQuery> implements TrackUpdateQuery {
 
-	TrackUpdateQueryImpl(SmofUpdate<Track> query, TrackQuery filter) {
+	TrackUpdateQueryImpl(UpdateOperations<Track> query, TrackQuery filter) {
 		super(query, filter);
 	}
 
 	@Override
 	public TrackUpdateFilterQuery where() {
-		return new TrackUpdateFilterQueryImpl(filter, query.where());
+		return new MorphiaTrackUpdateFilterQuery(filter, query);
 	}
 
 	@Override

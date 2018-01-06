@@ -3,20 +3,20 @@ package org.rookit.mongodb.update;
 import java.util.regex.Pattern;
 
 import org.bson.types.ObjectId;
+import org.mongodb.morphia.query.UpdateOperations;
 import org.rookit.dm.artist.Artist;
 import org.rookit.dm.track.Track;
 import org.rookit.dm.track.audio.TrackKey;
 import org.rookit.dm.track.audio.TrackMode;
 import org.rookit.mongodb.queries.TrackQuery;
-import org.smof.collection.SmofUpdateQuery;
 
 import com.google.common.collect.Range;
 
-class TrackUpdateFilterQueryImpl extends AbstractGenreableUpdateFilterQuery<Track, TrackQuery, TrackUpdateFilterQuery> implements TrackUpdateFilterQuery {
+class MorphiaTrackUpdateFilterQuery extends AbstractGenreableUpdateFilterQuery<Track, TrackQuery, TrackUpdateFilterQuery> implements TrackUpdateFilterQuery {
 
 	private final TrackQuery filter;
 	
-	protected TrackUpdateFilterQueryImpl(TrackQuery filter, SmofUpdateQuery<Track> updateQuery) {
+	protected MorphiaTrackUpdateFilterQuery(TrackQuery filter, UpdateOperations<Track> updateQuery) {
 		super(filter, updateQuery);
 		this.filter = filter;
 	}
@@ -174,6 +174,42 @@ class TrackUpdateFilterQueryImpl extends AbstractGenreableUpdateFilterQuery<Trac
 	@Override
 	public TrackUpdateFilterQuery withValence(double valence) {
 		filter.withValence(valence);
+		return this;
+	}
+
+	@Override
+	public TrackUpdateFilterQuery withDanceability(double min, double max) {
+		filter.withDanceability(min, max);
+		return this;
+	}
+
+	@Override
+	public TrackUpdateFilterQuery withDanceability(Range<Double> range) {
+		filter.withDanceability(range);
+		return this;
+	}
+
+	@Override
+	public TrackUpdateFilterQuery withEnergy(double min, double max) {
+		filter.withEnergy(min, max);
+		return this;
+	}
+
+	@Override
+	public TrackUpdateFilterQuery withEnergy(Range<Double> range) {
+		filter.withEnergy(range);
+		return this;
+	}
+
+	@Override
+	public TrackUpdateFilterQuery withValence(double min, double max) {
+		filter.withValence(min, max);
+		return this;
+	}
+
+	@Override
+	public TrackUpdateFilterQuery withValence(Range<Double> range) {
+		filter.withValence(range);
 		return this;
 	}
 

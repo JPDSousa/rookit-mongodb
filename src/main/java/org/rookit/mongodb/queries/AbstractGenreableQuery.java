@@ -22,18 +22,22 @@
 package org.rookit.mongodb.queries;
 
 import org.bson.types.ObjectId;
+import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.query.Query;
 import org.rookit.dm.genre.Genre;
 import org.rookit.dm.genre.Genreable;
-import org.smof.collection.ParentQuery;
+
+import com.google.common.collect.Lists;
 
 import static org.rookit.dm.genre.Genreable.*;
 
 import java.util.Arrays;
 
-abstract class AbstractGenreableQuery<E extends Genreable, Q extends GenreableQuery<E, Q>> extends AbstractPlayableQuery<E, Q> implements GenreableQuery<E, Q> {
+@SuppressWarnings("javadoc")
+public abstract class AbstractGenreableQuery<E extends Genreable, Q extends GenreableQuery<E, Q>> extends AbstractPlayableQuery<E, Q> implements GenreableQuery<E, Q> {
 
-	protected AbstractGenreableQuery(ParentQuery<E> query) {
-		super(query);
+	protected AbstractGenreableQuery(Datastore datastore, Query<E> query) {
+		super(datastore, query);
 	}
 
 	@Override
@@ -44,7 +48,7 @@ abstract class AbstractGenreableQuery<E extends Genreable, Q extends GenreableQu
 	@SuppressWarnings("unchecked")
 	@Override
 	public Q withGenre(ObjectId id) {
-		query.withFieldEquals(GENRES, id);
+		query.field(GENRES).equal(id);
 		return (Q) this;
 	}
 
@@ -58,7 +62,7 @@ abstract class AbstractGenreableQuery<E extends Genreable, Q extends GenreableQu
 	@SuppressWarnings("unchecked")
 	@Override
 	public Q withGenres(ObjectId[] ids) {
-		query.withFieldIn(GENRES, toObjectArray(ids));
+		query.field(GENRES).in(Lists.newArrayList(ids));
 		return (Q) this;
 	}
 

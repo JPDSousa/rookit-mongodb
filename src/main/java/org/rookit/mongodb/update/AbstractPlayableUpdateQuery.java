@@ -1,20 +1,20 @@
 package org.rookit.mongodb.update;
 
+import static org.rookit.dm.play.able.Playable.*;
+
 import java.time.Duration;
 import java.time.LocalDate;
 
-import org.rookit.dm.play.Playable;
+import org.mongodb.morphia.query.UpdateOperations;
+import org.rookit.dm.play.able.Playable;
 import org.rookit.mongodb.queries.PlayableQuery;
-import org.smof.collection.SmofUpdate;
-
-import static org.rookit.dm.play.Playable.*;
 
 abstract class AbstractPlayableUpdateQuery<E extends Playable, F extends PlayableQuery<E, F>, Q extends PlayableUpdateQuery<Q, S>, S extends PlayableUpdateFilterQuery<S>> implements PlayableUpdateQuery<Q, S> {
 
-	protected final SmofUpdate<E> query;
+	protected final UpdateOperations<E> query;
 	protected final F filter;
 	
-	AbstractPlayableUpdateQuery(SmofUpdate<E> query, F filter) {
+	AbstractPlayableUpdateQuery(UpdateOperations<E> query, F filter) {
 		super();
 		this.query = query;
 		this.filter = filter;
@@ -23,7 +23,7 @@ abstract class AbstractPlayableUpdateQuery<E extends Playable, F extends Playabl
 	@SuppressWarnings("unchecked")
 	@Override
 	public Q play() {
-		query.increase(PLAYS, 1);
+		query.inc(PLAYS, 1);
 		return (Q) this;
 	}
 
@@ -65,7 +65,7 @@ abstract class AbstractPlayableUpdateQuery<E extends Playable, F extends Playabl
 	@SuppressWarnings("unchecked")
 	@Override
 	public Q skip() {
-		query.increase(SKIPPED, 1);
+		query.inc(SKIPPED, 1);
 		return (Q) this;
 	}
 	

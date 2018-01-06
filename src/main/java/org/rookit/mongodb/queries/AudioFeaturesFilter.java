@@ -23,9 +23,15 @@ public interface AudioFeaturesFilter<Q> {
 	Q withAcoustic(boolean acoustic);
 	
 	Q withDanceability(double danceability);
+	Q withDanceability(double min, double max);
+	Q withDanceability(Range<Double> range);
 	
 	Q withEnergy(double energy);
+	Q withEnergy(double min, double max);
+	Q withEnergy(Range<Double> range);
 	
 	Q withValence(double valence);
+	Q withValence(double min, double max);
+	Q withValence(Range<Double> range);
 
 }

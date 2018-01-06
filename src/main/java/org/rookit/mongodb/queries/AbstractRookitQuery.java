@@ -22,59 +22,88 @@
 package org.rookit.mongodb.queries;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
-import org.bson.BsonDocument;
 import org.bson.types.ObjectId;
-import org.smof.collection.ParentQuery;
-import org.smof.element.Element;
+import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.query.Query;
+import org.mongodb.morphia.query.Sort;
+import org.rookit.dm.RookitModel;
+import org.rookit.mongodb.utils.FieldOrder;
+import org.rookit.mongodb.utils.Order;
 
-abstract class AbstractRookitQuery<Q extends RookitQuery<Q, E>, E extends Element> implements RookitQuery<Q, E> {
+import com.google.common.collect.Lists;
 
-	protected static final boolean INCLUDE_BOUND = false;
-	
+@SuppressWarnings("javadoc")
+public abstract class AbstractRookitQuery<Q extends RookitQuery<Q, E>, E extends RookitModel> implements RookitQuery<Q, E> {
+
 	protected static <T extends Object> Object[] toObjectArray(T[] array) {
 		return Arrays.stream(array).map(t -> (Object) t).toArray();
 	}
 	
-	protected final ParentQuery<E> query;
+	protected final Query<E> query;
+	private final Datastore datastore;
 
-	protected AbstractRookitQuery(ParentQuery<E> query) {
+	protected AbstractRookitQuery(Datastore datastore, Query<E> query) {
 		super();
 		this.query = query;
+		this.datastore = datastore;
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public Q order(Order order) {
+		final List<Sort> sorts = Lists.newLinkedList();
+		for(FieldOrder field : order.getFields()) {
+			switch(field.getOrder()) {
+			case ASC:
+				sorts.add(Sort.ascending(field.getField()));
+				break;
+			case DSC:
+				sorts.add(Sort.descending(field.getField()));
+				break;
+			}
+		}
+		query.order(sorts.toArray(new Sort[sorts.size()]));
+		return (Q) this;
+	}
+
+	public Query<E> getQuery() {
+		return query;
+	}
+	
+	public Datastore getDatastore() {
+		return datastore;
 	}
 	
 	@Override
 	public Stream<E> stream() {
-		return query.results().stream();
+		return StreamSupport.stream(query.fetch().spliterator(), false);
 	}
 	
 	@Override
 	public long count() {
-		return query.results().count();
+		return query.count();
 	}
 	
 	
 	@Override
 	public E first() {
-		return query.results().first();
-	}
-	
-	@Override
-	public E byElement(E element) {
-		return query.byElement(element);
+		return query.get();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Q withId(ObjectId id) {
-		query.withFieldEquals(Element.ID, id);
+		query.field(RookitModel.ID).equal(id);
 		return (Q) this;
 	}
 
 	@Override
-	public BsonDocument getBson() {
-		return query.asBson();
+	public String toString() {
+		return query.toString();
 	}
 	
 }

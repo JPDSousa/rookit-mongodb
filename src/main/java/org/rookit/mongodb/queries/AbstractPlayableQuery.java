@@ -21,112 +21,121 @@
  ******************************************************************************/
 package org.rookit.mongodb.queries;
 
+import static org.rookit.dm.play.able.Playable.*;
+
+import java.time.Duration;
 import java.time.LocalDate;
 
-import org.rookit.dm.play.Playable;
-import org.smof.collection.ParentQuery;
+import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.query.Query;
+import org.rookit.dm.play.able.Playable;
 
-import static org.rookit.dm.play.Playable.*;
+@SuppressWarnings("javadoc")
+public abstract class AbstractPlayableQuery<E extends Playable, Q extends PlayableQuery<E, Q>> extends AbstractRookitQuery<Q, E> implements PlayableQuery<E, Q> {
 
-abstract class AbstractPlayableQuery<E extends Playable, Q extends PlayableQuery<E, Q>> extends AbstractRookitQuery<Q, E> implements PlayableQuery<E, Q> {
-	
-	protected AbstractPlayableQuery(ParentQuery<E> query) {
-		super(query);
+	protected AbstractPlayableQuery(Datastore datastore, Query<E> query) {
+		super(datastore, query);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Q playedMoreThan(long plays) {
-		query.withFieldGreater(PLAYS, plays, INCLUDE_BOUND);
+		query.field(PLAYS).greaterThan(plays);
 		return (Q) this;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Q playedLessThan(long plays) {
-		query.withFieldSmaller(PLAYS, plays, INCLUDE_BOUND);
+		query.field(PLAYS).lessThan(plays);
 		return (Q) this;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Q playedBetween(long min, long max) {
-		query.withFieldGreater(PLAYS, min, INCLUDE_BOUND)
-		.withFieldSmaller(PLAYS, max, INCLUDE_BOUND);
+		query.and(
+				query.criteria(PLAYS).greaterThan(min),
+				query.criteria(PLAYS).lessThan(max)
+				);
 		return (Q) this;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Q lastPlayedBefore(LocalDate date) {
-		query.withFieldSmaller(LAST_PLAYED, date, INCLUDE_BOUND);
+		query.field(LAST_PLAYED).lessThan(date);
 		return (Q) this;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Q lastPlayedAfter(LocalDate date) {
-		query.withFieldGreater(LAST_PLAYED, date, INCLUDE_BOUND);
+		query.field(LAST_PLAYED).greaterThan(date);
 		return (Q) this;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Q skippedMoreThan(long skipped) {
-		query.withFieldGreater(SKIPPED, skipped, INCLUDE_BOUND);
+		query.field(SKIPPED).greaterThan(skipped);
 		return (Q) this;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Q skippedLessThan(long skipped) {
-		query.withFieldSmaller(SKIPPED, skipped, INCLUDE_BOUND);
+		query.field(SKIPPED).lessThan(skipped);
 		return (Q) this;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Q skippedBetween(long min, long max) {
-		query.withFieldGreater(SKIPPED, min, INCLUDE_BOUND)
-		.withFieldSmaller(SKIPPED, max, INCLUDE_BOUND);
+		query.and(
+				query.criteria(SKIPPED).greaterThan(min),
+				query.criteria(SKIPPED).lessThan(max)
+				);
 		return (Q) this;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Q lastSkippedBefore(LocalDate date) {
-		query.withFieldSmaller(LAST_SKIPPED, date, INCLUDE_BOUND);
+		query.field(LAST_SKIPPED).lessThan(date);
 		return (Q) this;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Q lastSkippedAfter(LocalDate date) {
-		query.withFieldGreater(LAST_SKIPPED, date, INCLUDE_BOUND);
+		query.field(LAST_SKIPPED).greaterThan(date);
 		return (Q) this;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Q withDurationGreaterThan(long duration) {
-		query.withFieldGreater(DURATION, duration, INCLUDE_BOUND);
+	public Q withDurationGreaterThan(Duration duration) {
+		query.field(DURATION).greaterThan(duration);
 		return (Q) this;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Q withDurationSmallerThan(long duration) {
-		query.withFieldSmaller(DURATION, duration, INCLUDE_BOUND);
+	public Q withDurationSmallerThan(Duration duration) {
+		query.field(DURATION).lessThan(duration);
 		return (Q) this;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Q withDurationBetween(long min, long max) {
-		query.withFieldGreater(DURATION, min, INCLUDE_BOUND)
-		.withFieldSmaller(DURATION, max, INCLUDE_BOUND);
+	public Q withDurationBetween(Duration min, Duration max) {
+		query.and(
+				query.criteria(DURATION).greaterThan(min),
+				query.criteria(DURATION).lessThan(max)
+				);
 		return (Q) this;
 	}
 
-	
+
 }

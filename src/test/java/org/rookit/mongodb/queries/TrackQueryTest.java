@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import org.bson.BsonDocument;
 import org.bson.BsonObjectId;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -28,28 +27,24 @@ import org.rookit.mongodb.utils.TestResources;
 @SuppressWarnings("javadoc")
 public class TrackQueryTest {
 
-	private static DBManager guineaPig;
+	private DBManager guineaPig;
 	private static DMTestFactory factory;
-	
+
 	@BeforeClass
 	public static final void setUp() {
-		guineaPig = TestResources.createTestConnection();
 		factory = DMTestFactory.getDefault();
 	}
-	
-	@AfterClass
-	public static final void drop() throws IOException {
-		guineaPig.close();
-	}
-	
+
 	@Before
 	public final void beforeTest() {
+		guineaPig = TestResources.createTestConnection();
 		guineaPig.init();
 	}
-	
+
 	@After
-	public final void afterTest() {
+	public final void afterTest() throws IOException {
 		guineaPig.clear();
+		guineaPig.close();
 	}
 
 	@Test
@@ -67,14 +62,14 @@ public class TrackQueryTest {
 		guineaPig.addTrack(original);
 		guineaPig.addTrack(remix1);
 		guineaPig.addTrack(remix2);
+
 		assertEquals(3, guineaPig.getTracks().count());
-		System.out.println(guineaPig.getTracks().stream().collect(Collectors.toList()));
-		final BsonDocument expectedQuery = new BsonDocument(ORIGINAL, 
-				new BsonDocument("$eq", new BsonObjectId(original.getId())));
+		final BsonDocument expectedQuery = new BsonDocument("query", 
+				new BsonDocument(ORIGINAL, new BsonObjectId(original.getId())));
 		final TrackQuery query = guineaPig
 				.getTracks()
 				.withOriginal(original);
-		assertEquals(expectedQuery, query.getBson());
+		assertEquals(expectedQuery, BsonDocument.parse(query.toString()));
 		final List<Track> results = query
 				.stream()
 				.collect(Collectors.toList());

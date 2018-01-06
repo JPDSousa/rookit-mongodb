@@ -1,16 +1,17 @@
 package org.rookit.mongodb.update;
 
+import java.time.Duration;
 import java.time.LocalDate;
 
-import org.rookit.dm.play.Playable;
+import org.mongodb.morphia.query.UpdateOperations;
+import org.rookit.dm.play.able.Playable;
 import org.rookit.mongodb.queries.PlayableQuery;
-import org.smof.collection.SmofUpdateQuery;
 
 abstract class AbstractPlayableUpdateFilterQuery<E extends Playable, Q extends PlayableQuery<E, Q>, U extends PlayableUpdateFilterQuery<U>> 
 	extends AbstractUpdateFilterQuery<E, Q, U> 
 	implements PlayableUpdateFilterQuery<U> {
 
-	protected AbstractPlayableUpdateFilterQuery(Q filter, SmofUpdateQuery<E> updateQuery) {
+	protected AbstractPlayableUpdateFilterQuery(Q filter, UpdateOperations<E> updateQuery) {
 		super(filter, updateQuery);
 	}
 
@@ -86,21 +87,21 @@ abstract class AbstractPlayableUpdateFilterQuery<E extends Playable, Q extends P
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public U withDurationGreaterThan(long duration) {
+	public U withDurationGreaterThan(Duration duration) {
 		filter.withDurationGreaterThan(duration);
 		return (U) this;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public U withDurationSmallerThan(long duration) {
+	public U withDurationSmallerThan(Duration duration) {
 		filter.withDurationSmallerThan(duration);
 		return (U) this;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public U withDurationBetween(long min, long max) {
+	public U withDurationBetween(Duration min, Duration max) {
 		filter.withDurationBetween(min, max);
 		return (U) this;
 	}

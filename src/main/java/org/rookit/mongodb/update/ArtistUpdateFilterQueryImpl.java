@@ -3,18 +3,18 @@ package org.rookit.mongodb.update;
 import java.time.LocalDate;
 import java.util.regex.Pattern;
 
+import org.mongodb.morphia.query.UpdateOperations;
 import org.rookit.dm.artist.Artist;
 import org.rookit.dm.artist.Musician;
 import org.rookit.dm.artist.TypeArtist;
 import org.rookit.dm.artist.TypeGender;
 import org.rookit.dm.artist.TypeGroup;
 import org.rookit.mongodb.queries.ArtistQuery;
-import org.smof.collection.SmofUpdateQuery;
 
 class ArtistUpdateFilterQueryImpl extends AbstractGenreableUpdateFilterQuery<Artist, ArtistQuery, ArtistUpdateFilterQuery>
 		implements ArtistUpdateFilterQuery {
 
-	protected ArtistUpdateFilterQueryImpl(ArtistQuery filter, SmofUpdateQuery<Artist> updateQuery) {
+	protected ArtistUpdateFilterQueryImpl(ArtistQuery filter, UpdateOperations<Artist> updateQuery) {
 		super(filter, updateQuery);
 	}
 

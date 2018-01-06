@@ -23,21 +23,19 @@ package org.rookit.mongodb.queries;
 
 import java.util.stream.Stream;
 
-import org.bson.BsonDocument;
+import org.rookit.dm.RookitModel;
 import org.rookit.mongodb.queries.filter.RookitFilter;
-import org.smof.element.Element;
+import org.rookit.mongodb.utils.Order;
 
 @SuppressWarnings("javadoc")
-public interface RookitQuery<Q extends RookitQuery<Q, E>, E extends Element> extends RookitFilter<Q> {
+public interface RookitQuery<Q extends RookitQuery<Q, E>, E extends RookitModel> extends RookitFilter<Q> {
 
+	Q order(Order order);
+	
 	Stream<E> stream();
 
 	long count();
 
 	E first();
-
-	E byElement(E element);
-
-	BsonDocument getBson();
 
 }

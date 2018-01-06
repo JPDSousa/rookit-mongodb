@@ -3,22 +3,22 @@ package org.rookit.mongodb.update;
 import java.time.LocalDate;
 import java.util.Set;
 
+import org.mongodb.morphia.query.UpdateOperations;
 import org.rookit.dm.artist.Artist;
 import org.rookit.mongodb.queries.ArtistQuery;
 import org.rookit.utils.exception.InvalidOperationException;
-import org.smof.collection.SmofUpdate;
 
 import static org.rookit.dm.artist.DatabaseFields.*;
 
 class ArtistUpdateQueryImpl extends AbstractGenreableUpdateQuery<Artist, ArtistQuery, ArtistUpdateQuery, ArtistUpdateFilterQuery> implements ArtistUpdateQuery {
 
-	ArtistUpdateQueryImpl(SmofUpdate<Artist> query, ArtistQuery filter) {
+	ArtistUpdateQueryImpl(UpdateOperations<Artist> query, ArtistQuery filter) {
 		super(query, filter);
 	}
 
 	@Override
 	public ArtistUpdateFilterQuery where() {
-		return new ArtistUpdateFilterQueryImpl(filter, query.where());
+		return new ArtistUpdateFilterQueryImpl(filter, query);
 	}
 
 	@Override

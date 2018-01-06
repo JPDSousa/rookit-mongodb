@@ -21,7 +21,7 @@
  ******************************************************************************/
 package org.rookit.mongodb.queries;
 
-import org.rookit.dm.play.Playable;
+import org.rookit.dm.play.able.Playable;
 import org.rookit.mongodb.queries.filter.PlayableFilter;
 
 @SuppressWarnings("javadoc")

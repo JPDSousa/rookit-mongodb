@@ -21,117 +21,118 @@
  ******************************************************************************/
 package org.rookit.mongodb.queries;
 
+import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.query.Query;
 import org.rookit.dm.artist.Artist;
 import org.rookit.dm.artist.Musician;
 import org.rookit.dm.artist.TypeArtist;
 import org.rookit.dm.artist.TypeGender;
 import org.rookit.dm.artist.TypeGroup;
-import org.smof.collection.ParentQuery;
 
 import static org.rookit.dm.artist.DatabaseFields.*;
 
 import java.time.LocalDate;
 import java.util.regex.Pattern;
 
-class ArtistQueryImpl extends AbstractGenreableQuery<Artist, ArtistQuery> implements ArtistQuery{
+class MorphiaArtistQuery extends AbstractGenreableQuery<Artist, ArtistQuery> implements ArtistQuery{
 
-	public ArtistQueryImpl(ParentQuery<Artist> query) {
-		super(query);
+	public MorphiaArtistQuery(Datastore datastore, Query<Artist> query) {
+		super(datastore, query);
 	}
 
 	@Override
 	public ArtistQuery withArtistType(TypeArtist type) {
-		query.withFieldEquals(TYPE, type);
+		query.field(TYPE).equal(type);
 		return this;
 	}
 
 	@Override
 	public ArtistQuery withName(String artistName) {
-		query.withFieldEquals(NAME, artistName);
+		query.field(NAME).equalIgnoreCase(artistName);
 		return this;
 	}
 
 	@Override
 	public ArtistQuery withName(Pattern regex) {
-		query.withFieldRegex(NAME, regex);
+		query.field(NAME).equal(regex);
 		return this;
 	}
 
 	@Override
 	public ArtistQuery withFullName(String fullName) {
-		query.withFieldEquals(FULL_NAME, fullName);
+		query.field(FULL_NAME).equalIgnoreCase(fullName);
 		return this;
 	}
 
 	@Override
 	public ArtistQuery withFullName(Pattern regex) {
-		query.withFieldRegex(FULL_NAME, regex);
+		query.field(FULL_NAME).equal(regex);
 		return this;
 	}
 
 	@Override
 	public ArtistQuery relatedTo(Artist artist) {
-		query.withFieldEquals(RELATED, artist.getId());
+		query.field(RELATED).equal(artist.getId());
 		return this;
 	}
 
 	@Override
 	public ArtistQuery withOrigin(String origin) {
-		query.withFieldEquals(ORIGIN, origin);
+		query.field(ORIGIN).equal(origin);
 		return this;
 	}
 
 	@Override
 	public ArtistQuery withIPI(String ipi) {
-		query.withFieldEquals(IPI, ipi);
+		query.field(IPI).equal(ipi);
 		return this;
 	}
 
 	@Override
 	public ArtistQuery withISNI(String isni) {
-		query.withFieldEquals(ISNI, isni);
+		query.field(ISNI).equal(isni);
 		return this;
 	}
 
 	@Override
 	public ArtistQuery withGender(TypeGender gender) {
-		query.withFieldEquals(GENDER, gender);
+		query.field(GENDER).equal(gender);
 		return this;
 	}
 
 	@Override
 	public ArtistQuery withGroupType(TypeGroup type) {
-		query.withFieldEquals(GROUP_TYPE, type);
+		query.field(GROUP_TYPE).equal(type);
 		return this;
 	}
 
 	@Override
 	public ArtistQuery withAlias(String alias) {
-		query.withFieldEquals(ALIASES, alias);
+		query.field(ALIASES).equal(alias);
 		return this;
 	}
 
 	@Override
 	public ArtistQuery withAlias(Pattern regex) {
-		query.withFieldRegex(ALIASES, regex);
+		query.field(ALIASES).equal(regex);
 		return this;
 	}
 
 	@Override
 	public ArtistQuery withBeginDate(LocalDate date) {
-		query.withFieldEquals(BEGIN_DATE, date);
+		query.field(BEGIN_DATE).equal(date);
 		return this;
 	}
 
 	@Override
 	public ArtistQuery withEndDate(LocalDate date) {
-		query.withFieldEquals(END_DATE, date);
+		query.field(END_DATE).equal(date);
 		return this;
 	}
 
 	@Override
 	public ArtistQuery withMember(Musician member) {
-		query.withFieldEquals(MEMBERS, member.getId());
+		query.field(MEMBERS).equalIgnoreCase(member.getId());
 		return this;
 	}
 	
