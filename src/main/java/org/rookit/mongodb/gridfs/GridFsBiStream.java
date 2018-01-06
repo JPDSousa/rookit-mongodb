@@ -3,7 +3,6 @@ package org.rookit.mongodb.gridfs;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
@@ -70,80 +69,7 @@ public class GridFsBiStream implements BiStream {
 	@Override
 	public synchronized InputStream toInput() {
 		checkNotNull(id, "Cannot open input stream, as there is no id");
-		return new InputStream() {
-			
-			private final InputStream innerStream = bucket.openDownloadStream(id);
-
-			@Override
-			public int read() throws IOException {
-				return innerStream.read();
-			}
-
-			@Override
-			public int hashCode() {
-				return innerStream.hashCode();
-			}
-
-			@Override
-			public int read(byte[] b) throws IOException {
-				int n = 0;
-				int pos = 0;
-				while(n != -1) {
-					n = read(b, pos, b.length);
-					if(n != -1) {
-						pos += n;
-					}
-				}
-				return pos == 0 ? n : pos;
-			}
-
-			@Override
-			public boolean equals(Object obj) {
-				return innerStream.equals(obj);
-			}
-
-			@Override
-			public int read(byte[] b, int off, int len) throws IOException {
-				return innerStream.read(b, off, len);
-			}
-
-			@Override
-			public long skip(long n) throws IOException {
-				return innerStream.skip(n);
-			}
-
-			@Override
-			public String toString() {
-				return innerStream.toString();
-			}
-
-			@Override
-			public int available() throws IOException {
-				return innerStream.available();
-			}
-
-			@Override
-			public void close() throws IOException {
-				innerStream.close();
-			}
-
-			@Override
-			public void mark(int readlimit) {
-				innerStream.mark(readlimit);
-			}
-
-			@Override
-			public void reset() throws IOException {
-				innerStream.reset();
-			}
-
-			@Override
-			public boolean markSupported() {
-				return innerStream.markSupported();
-			}
-			
-			
-		};
+		return bucket.openDownloadStream(id);
 	}
 	
 	public synchronized void readTo(OutputStream stream) {
@@ -158,6 +84,11 @@ public class GridFsBiStream implements BiStream {
 			id = new ObjectId();
 		}
 		return bucket.openUploadStream(new BsonObjectId(id), id.toHexString());
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return id == null;
 	}
 	
 }

@@ -271,27 +271,27 @@ class RookitMorphia implements DBManager {
 
 	@Override
 	public void replaceAlbum(Album album) {
-		datastore.save(album);
+		addAlbum(album);
 	}
 
 	@Override
 	public void replaceArtist(final Artist artist) {
-		datastore.save(artist);
+		addArtist(artist);
 	}
 
 	@Override
 	public void replaceGenre(final Genre genre) {
-		datastore.save(genre);
+		addGenre(genre);
 	}
 
 	@Override
 	public void replacePlaylist(Playlist playlist) {
-		datastore.save(playlist);
+		addPlaylist(playlist);
 	}
 
 	@Override
 	public void replaceTrack(final Track track) {
-		datastore.save(track);
+		addTrack(track);
 	}
 
 	@Override

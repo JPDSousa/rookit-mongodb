@@ -26,13 +26,13 @@ import static org.hamcrest.Matchers.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -40,12 +40,13 @@ import org.junit.Test;
 import org.rookit.dm.album.Album;
 import org.rookit.dm.artist.Artist;
 import org.rookit.dm.genre.Genre;
+import org.rookit.dm.play.Playlist;
 import org.rookit.dm.track.Track;
 import org.rookit.dm.track.TrackFactory;
 import org.rookit.dm.track.TypeVersion;
 import org.rookit.dm.track.VersionTrack;
-import org.rookit.dm.utils.bistream.BiStream;
 import org.rookit.dm.test.DMTestFactory;
+import org.rookit.dm.utils.bistream.BiStream;
 import org.rookit.mongodb.DBManager;
 import org.rookit.mongodb.gridfs.GridFsBiStream;
 import org.rookit.mongodb.utils.TestResources;
@@ -90,11 +91,28 @@ public class DatabaseTest {
 				.withId(expected.getId())
 				.first();
 		assertEquals(expected, actual);
-		final byte[] actualContent = new byte[bytes.length];
-		final InputStream input = actual.getPath().toInput();
-		input.read(actualContent);
-		input.close();
-		assertArrayEquals(bytes, actualContent);
+		final ByteArrayOutputStream actualContent = new ByteArrayOutputStream(bytes.length);
+		IOUtils.copy(actual.getPath().toInput(), actualContent);
+		assertArrayEquals(bytes, actualContent.toByteArray());
+	}
+	
+	@Test
+	public final void testAddPlaylist() throws IOException {
+		final Playlist expected = factory.getRandomPlaylist();
+		final byte[] bytes = Files.readAllBytes(TestResources.getRandomCoverPath());
+		final BiStream dbRef = expected.getImage();
+		
+		final OutputStream output = dbRef.toOutput();
+		output.write(bytes);
+		output.close();
+		guineaPig.addPlaylist(expected);
+		final Playlist actual = guineaPig.getPlaylists()
+				.withId(expected.getId())
+				.first();
+		assertEquals(expected, actual);
+		final ByteArrayOutputStream actualContent = new ByteArrayOutputStream(bytes.length);
+		IOUtils.copy(actual.getImage().toInput(), actualContent);
+		assertArrayEquals(bytes, actualContent.toByteArray());
 	}
 	
 	@Test
@@ -177,12 +195,9 @@ public class DatabaseTest {
 		assertArrayEquals(expectedContent, arrayOut.toByteArray());
 		
 		// toInput
-		final byte[] actualContent = new byte[expectedContent.length];
-		final InputStream input = actual.getCover().toInput();
-		assertEquals(expectedContent.length, actualContent.length);
-		input.read(actualContent);
-		input.close();
-		assertArrayEquals(expectedContent, actualContent);
+		final ByteArrayOutputStream actualContent = new ByteArrayOutputStream(expectedContent.length);
+		IOUtils.copy(actual.getCover().toInput(), actualContent);
+		assertArrayEquals(expectedContent, actualContent.toByteArray());
 	}
 	
 	

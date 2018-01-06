@@ -22,13 +22,19 @@
 package org.rookit.mongodb.queries;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.query.Query;
+import org.mongodb.morphia.query.Sort;
 import org.rookit.dm.RookitModel;
+import org.rookit.mongodb.utils.FieldOrder;
+import org.rookit.mongodb.utils.Order;
+
+import com.google.common.collect.Lists;
 
 @SuppressWarnings("javadoc")
 public abstract class AbstractRookitQuery<Q extends RookitQuery<Q, E>, E extends RookitModel> implements RookitQuery<Q, E> {
@@ -46,6 +52,24 @@ public abstract class AbstractRookitQuery<Q extends RookitQuery<Q, E>, E extends
 		this.datastore = datastore;
 	}
 	
+	@SuppressWarnings("unchecked")
+	@Override
+	public Q order(Order order) {
+		final List<Sort> sorts = Lists.newLinkedList();
+		for(FieldOrder field : order.getFields()) {
+			switch(field.getOrder()) {
+			case ASC:
+				sorts.add(Sort.ascending(field.getField()));
+				break;
+			case DSC:
+				sorts.add(Sort.descending(field.getField()));
+				break;
+			}
+		}
+		query.order(sorts.toArray(new Sort[sorts.size()]));
+		return (Q) this;
+	}
+
 	public Query<E> getQuery() {
 		return query;
 	}

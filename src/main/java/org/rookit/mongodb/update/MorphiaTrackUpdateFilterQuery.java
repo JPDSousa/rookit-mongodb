@@ -177,4 +177,40 @@ class MorphiaTrackUpdateFilterQuery extends AbstractGenreableUpdateFilterQuery<T
 		return this;
 	}
 
+	@Override
+	public TrackUpdateFilterQuery withDanceability(double min, double max) {
+		filter.withDanceability(min, max);
+		return this;
+	}
+
+	@Override
+	public TrackUpdateFilterQuery withDanceability(Range<Double> range) {
+		filter.withDanceability(range);
+		return this;
+	}
+
+	@Override
+	public TrackUpdateFilterQuery withEnergy(double min, double max) {
+		filter.withEnergy(min, max);
+		return this;
+	}
+
+	@Override
+	public TrackUpdateFilterQuery withEnergy(Range<Double> range) {
+		filter.withEnergy(range);
+		return this;
+	}
+
+	@Override
+	public TrackUpdateFilterQuery withValence(double min, double max) {
+		filter.withValence(min, max);
+		return this;
+	}
+
+	@Override
+	public TrackUpdateFilterQuery withValence(Range<Double> range) {
+		filter.withValence(range);
+		return this;
+	}
+
 }

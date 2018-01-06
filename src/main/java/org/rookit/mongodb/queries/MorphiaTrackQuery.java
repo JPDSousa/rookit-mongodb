@@ -134,13 +134,38 @@ class MorphiaTrackQuery extends AbstractGenreableQuery<Track, TrackQuery> implem
 		query.filter(VERSION_TOKEN, regex);
 		return this;
 	}
+	
+	private void handleMinMax(String fieldName, Number min, Number max) {
+		query.and(
+				query.criteria(fieldName).greaterThan(min),
+				query.criteria(fieldName).lessThan(max)
+				);
+	}
+	
+	private void handleRange(String fieldName, Range<?> range) {
+		final List<Criteria> criterias = Lists.newArrayListWithCapacity(2);
+		if(range.hasLowerBound()) {
+			if(range.lowerBoundType() == BoundType.OPEN) {
+				criterias.add(query.criteria(fieldName).greaterThanOrEq(range.lowerEndpoint()));
+			}
+			else {
+				criterias.add(query.criteria(fieldName).greaterThan(range.lowerEndpoint()));
+			}
+		}
+		if(range.hasUpperBound()) {
+			if(range.upperBoundType() == BoundType.OPEN) {
+				criterias.add(query.criteria(fieldName).lessThanOrEq(range.upperEndpoint()));
+			}
+			else {
+				criterias.add(query.criteria(fieldName).lessThan(range.upperEndpoint()));
+			}
+		}
+		query.and(criterias.toArray(new Criteria[criterias.size()]));
+	}
 
 	@Override
 	public TrackQuery withBPM(short min, short max) {
-		query.and(
-				query.criteria(BPM).greaterThan(min),
-				query.criteria(BPM).lessThan(max)
-				);
+		handleMinMax(BPM, min, max);
 		return this;
 	}
 
@@ -152,24 +177,7 @@ class MorphiaTrackQuery extends AbstractGenreableQuery<Track, TrackQuery> implem
 
 	@Override
 	public TrackQuery withBPM(Range<Short> range) {
-		final List<Criteria> criterias = Lists.newArrayListWithCapacity(2);
-		if(range.hasLowerBound()) {
-			if(range.lowerBoundType() == BoundType.OPEN) {
-				criterias.add(query.criteria(BPM).greaterThanOrEq(range.lowerEndpoint()));
-			}
-			else {
-				criterias.add(query.criteria(BPM).greaterThan(range.lowerEndpoint()));
-			}
-		}
-		if(range.hasUpperBound()) {
-			if(range.upperBoundType() == BoundType.OPEN) {
-				criterias.add(query.criteria(BPM).lessThanOrEq(range.upperEndpoint()));
-			}
-			else {
-				criterias.add(query.criteria(BPM).lessThan(range.upperEndpoint()));
-			}
-		}
-		query.and(criterias.toArray(new Criteria[criterias.size()]));
+		handleRange(BPM, range);
 		return this;
 	}
 
@@ -210,14 +218,50 @@ class MorphiaTrackQuery extends AbstractGenreableQuery<Track, TrackQuery> implem
 	}
 
 	@Override
+	public TrackQuery withDanceability(double min, double max) {
+		handleMinMax(DANCEABILITY, min, max);
+		return this;
+	}
+
+	@Override
+	public TrackQuery withDanceability(Range<Double> range) {
+		handleRange(DANCEABILITY, range);
+		return this;
+	}
+
+	@Override
 	public TrackQuery withEnergy(double energy) {
 		query.field(ENERGY).equal(energy);
 		return this;
 	}
 
 	@Override
+	public TrackQuery withEnergy(double min, double max) {
+		handleMinMax(ENERGY, min, max);
+		return this;
+	}
+
+	@Override
+	public TrackQuery withEnergy(Range<Double> range) {
+		handleRange(ENERGY, range);
+		return this;
+	}
+
+	@Override
 	public TrackQuery withValence(double valence) {
 		query.field(VALENCE).equal(valence);
+		return this;
+	}
+
+	@Override
+	public TrackQuery withValence(double min, double max) {
+		handleMinMax(VALENCE, min, max);
+		return this;
+	}
+
+	@Override
+	public TrackQuery withValence(Range<Double> range) {
+		handleRange(VALENCE, range);
 		return this;
 	}
 	

@@ -44,7 +44,15 @@ public class DurationConverter extends TypeConverter implements SimpleValueConve
 		}
 		if(fromDBObject instanceof DBObject) {
 			final DBObject dbObject = (DBObject) fromDBObject;
-			return Duration.ofSeconds((long) dbObject.get(SECONDS), (int) dbObject.get(NANOS));
+			final Object secondsRaw = dbObject.get(SECONDS);
+			final long seconds;
+			if (secondsRaw instanceof Integer) {
+				seconds = ((Integer) secondsRaw).longValue();
+			}
+			else {
+				seconds = (Long) secondsRaw;
+			}
+			return Duration.ofSeconds(seconds, (int) dbObject.get(NANOS));
 		}
 		throw new IllegalArgumentException(new StringBuilder("Can't convert to ")
 				.append(Duration.class.getName())
