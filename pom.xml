@@ -34,15 +34,15 @@
 			<artifactId>commons-collections4</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.rookit</groupId>
+			<groupId>${rookit.group}</groupId>
 			<artifactId>rookit-utils</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.rookit</groupId>
+			<groupId>${rookit.group}</groupId>
 			<artifactId>rookit-data-model</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.rookit</groupId>
+			<groupId>${rookit.group}</groupId>
 			<artifactId>rookit-data-model-test</artifactId>
 		</dependency>
 	</dependencies>
@@ -69,17 +69,17 @@
 				<version>4.1</version>
 			</dependency>
 			<dependency>
-				<groupId>org.rookit</groupId>
+				<groupId>${rookit.group}</groupId>
 				<artifactId>rookit-utils</artifactId>
 				<version>${rookit.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.rookit</groupId>
+				<groupId>${rookit.group}</groupId>
 				<artifactId>rookit-data-model</artifactId>
 				<version>${rookit.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.rookit</groupId>
+				<groupId>${rookit.group}</groupId>
 				<artifactId>rookit-data-model-test</artifactId>
 				<version>${rookit.version}</version>
 			</dependency>
