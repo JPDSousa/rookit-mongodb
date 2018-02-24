@@ -5,26 +5,24 @@ import static com.google.common.base.Preconditions.*;
 import java.util.Map;
 
 import org.bson.types.ObjectId;
-import org.rookit.dm.utils.bistream.BiStream;
-import org.rookit.dm.utils.factory.RookitFactory;
+import org.rookit.api.bistream.BiStream;
+import org.rookit.api.dm.factory.RookitFactory;
 
 import com.mongodb.client.gridfs.GridFSBucket;
 
 @SuppressWarnings("javadoc")
 public class GridFsBiStreamFactory implements RookitFactory<BiStream> {
 	
-	public static final GridFsBiStreamFactory create(Map<String, GridFSBucket> bucketCache, 
+	public static final GridFsBiStreamFactory create(Buckets bucketCache, 
 			String bucketName) {
 		return new GridFsBiStreamFactory(bucketCache, bucketName);
 	}
 
-	private final Map<String, GridFSBucket> bucketCache;
 	private final GridFSBucket bucket;
 	
-	private GridFsBiStreamFactory(Map<String, GridFSBucket> bucketCache, String bucketName) {
+	private GridFsBiStreamFactory(Buckets bucketCache, String bucketName) {
 		checkArgument(bucketCache != null, "Must specify a bucket cache");
-		this.bucketCache = bucketCache;
-		this.bucket = bucketCache.get(bucketName);
+		this.bucket = bucketCache.getBucket(bucketName);
 	}
 
 	@Override

@@ -23,9 +23,10 @@ package org.rookit.mongodb.queries;
 
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.query.Query;
-import org.rookit.dm.genre.Genre;
+import org.rookit.api.dm.genre.Genre;
+import org.rookit.api.storage.queries.GenreQuery;
 
-import static org.rookit.dm.genre.DatabaseFields.*;
+import static org.rookit.api.dm.genre.GenreFields.*;
 
 import java.util.regex.Pattern;
 

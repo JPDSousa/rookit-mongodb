@@ -2,13 +2,17 @@ package org.rookit.mongodb.utils;
 
 import java.util.List;
 
+import org.rookit.api.storage.utils.FieldOrder;
+import org.rookit.api.storage.utils.Order;
+
 import com.google.common.collect.Lists;
 
-class OrderImpl implements Order {
+@SuppressWarnings("javadoc")
+public class OrderImpl implements Order {
 
 	private final List<FieldOrder> order;
 	
-	OrderImpl() {
+	public OrderImpl() {
 		order = Lists.newLinkedList();
 	}
 

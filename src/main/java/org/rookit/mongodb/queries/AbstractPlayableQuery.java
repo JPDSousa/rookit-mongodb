@@ -21,14 +21,15 @@
  ******************************************************************************/
 package org.rookit.mongodb.queries;
 
-import static org.rookit.dm.play.able.Playable.*;
+import static org.rookit.api.dm.play.able.Playable.*;
 
 import java.time.Duration;
 import java.time.LocalDate;
 
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.query.Query;
-import org.rookit.dm.play.able.Playable;
+import org.rookit.api.dm.play.able.Playable;
+import org.rookit.api.storage.queries.PlayableQuery;
 
 @SuppressWarnings("javadoc")
 public abstract class AbstractPlayableQuery<E extends Playable, Q extends PlayableQuery<E, Q>> extends AbstractRookitQuery<Q, E> implements PlayableQuery<E, Q> {

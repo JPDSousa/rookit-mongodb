@@ -3,9 +3,10 @@ package org.rookit.mongodb.update;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.query.UpdateOperations;
-import org.rookit.dm.RookitModel;
+import org.rookit.api.dm.RookitModel;
+import org.rookit.api.storage.queries.RookitQuery;
+import org.rookit.api.storage.update.RookitUpdateFilterQuery;
 import org.rookit.mongodb.queries.AbstractRookitQuery;
-import org.rookit.mongodb.queries.RookitQuery;
 
 abstract class AbstractUpdateFilterQuery<E extends RookitModel, Q extends RookitQuery<Q, E>, U extends RookitUpdateFilterQuery<U>> 
 	implements RookitUpdateFilterQuery<U> {

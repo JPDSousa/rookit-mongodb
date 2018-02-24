@@ -21,16 +21,11 @@
  ******************************************************************************/
 package org.rookit.mongodb.queries;
 
-import org.rookit.dm.artist.Artist;
-import org.rookit.dm.track.Track;
-import org.rookit.dm.track.audio.TrackKey;
-import org.rookit.dm.track.audio.TrackMode;
-
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 
-import static org.rookit.dm.track.DatabaseFields.*;
+import static org.rookit.api.dm.track.TrackFields.*;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -38,7 +33,13 @@ import java.util.regex.Pattern;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.query.Criteria;
+import org.mongodb.morphia.query.FieldEnd;
 import org.mongodb.morphia.query.Query;
+import org.rookit.api.dm.artist.Artist;
+import org.rookit.api.dm.track.Track;
+import org.rookit.api.dm.track.audio.TrackKey;
+import org.rookit.api.dm.track.audio.TrackMode;
+import org.rookit.api.storage.queries.TrackQuery;
 
 class MorphiaTrackQuery extends AbstractGenreableQuery<Track, TrackQuery> implements TrackQuery {
 	
@@ -262,6 +263,19 @@ class MorphiaTrackQuery extends AbstractGenreableQuery<Track, TrackQuery> implem
 	@Override
 	public TrackQuery withValence(Range<Double> range) {
 		handleRange(VALENCE, range);
+		return this;
+	}
+
+	@Override
+	public TrackQuery withPath(boolean isPathPresent) {
+		final FieldEnd<? extends Query<Track>> field = query.field(PATH);
+		
+		if (isPathPresent) {
+			field.exists();
+		} else {
+			field.doesNotExist();
+		}
+		
 		return this;
 	}
 	

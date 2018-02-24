@@ -21,8 +21,7 @@
  ******************************************************************************/
 package org.rookit.mongodb;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -33,49 +32,27 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.rookit.dm.album.Album;
-import org.rookit.dm.artist.Artist;
-import org.rookit.dm.genre.Genre;
-import org.rookit.dm.play.Playlist;
-import org.rookit.dm.track.Track;
-import org.rookit.dm.track.TrackFactory;
-import org.rookit.dm.track.TypeVersion;
-import org.rookit.dm.track.VersionTrack;
-import org.rookit.dm.test.DMTestFactory;
-import org.rookit.dm.utils.bistream.BiStream;
-import org.rookit.mongodb.DBManager;
+import org.junit.runner.RunWith;
+import org.rookit.api.bistream.BiStream;
+import org.rookit.api.dm.album.Album;
+import org.rookit.api.dm.artist.Artist;
+import org.rookit.api.dm.genre.Genre;
+import org.rookit.api.dm.play.Playlist;
+import org.rookit.api.dm.track.Track;
+import org.rookit.api.dm.track.TypeVersion;
+import org.rookit.api.dm.track.VersionTrack;
+import org.rookit.api.dm.track.factory.TrackFactory;
 import org.rookit.mongodb.gridfs.GridFsBiStream;
+import org.rookit.mongodb.queries.AbstractDBManagerTest;
 import org.rookit.mongodb.utils.TestResources;
 
+import com.google.code.tempusfugit.concurrency.ConcurrentTestRunner;
 import com.mongodb.client.gridfs.model.GridFSFile;
 
 @SuppressWarnings("javadoc")
-public class DatabaseTest {
-	
-	private DBManager guineaPig;
-	private static DMTestFactory factory;
-	private static TrackFactory trackFactory;
-	
-	@BeforeClass
-	public static final void setUp() {
-		factory = DMTestFactory.getDefault();
-		trackFactory = TrackFactory.getDefault();
-	}
-	
-	@Before
-	public final void beforeTest() {
-		guineaPig = TestResources.createTestConnection();
-	}
-	
-	@After
-	public final void afterTest() throws IOException {
-		guineaPig.clear();
-		guineaPig.close();
-	}
+@RunWith(ConcurrentTestRunner.class)
+public class DatabaseTest extends AbstractDBManagerTest {
 	
 	@Test
 	public final void testAddTrack() throws IOException {
@@ -90,10 +67,10 @@ public class DatabaseTest {
 		final Track actual = guineaPig.getTracks()
 				.withId(expected.getId())
 				.first();
-		assertEquals(expected, actual);
+		assertThat(actual).isEqualTo(expected);
 		final ByteArrayOutputStream actualContent = new ByteArrayOutputStream(bytes.length);
 		IOUtils.copy(actual.getPath().toInput(), actualContent);
-		assertArrayEquals(bytes, actualContent.toByteArray());
+		assertThat(actualContent.toByteArray()).isEqualTo(bytes);
 	}
 	
 	@Test
@@ -109,14 +86,15 @@ public class DatabaseTest {
 		final Playlist actual = guineaPig.getPlaylists()
 				.withId(expected.getId())
 				.first();
-		assertEquals(expected, actual);
+		assertThat(actual).isEqualTo(expected);
 		final ByteArrayOutputStream actualContent = new ByteArrayOutputStream(bytes.length);
 		IOUtils.copy(actual.getImage().toInput(), actualContent);
-		assertArrayEquals(bytes, actualContent.toByteArray());
+		assertThat(actualContent.toByteArray()).isEqualTo(bytes);
 	}
 	
 	@Test
 	public final void testAddRemix() {
+		final TrackFactory trackFactory = guineaPig.getFactories().getTrackFactory();
 		final Track original = trackFactory.createOriginalTrack("I'm original");
 		final VersionTrack remix1 = trackFactory.createVersionTrack(TypeVersion.REMIX, original);
 		final VersionTrack remix2 = trackFactory.createVersionTrack(TypeVersion.REMIX, original);
@@ -129,11 +107,12 @@ public class DatabaseTest {
 		guineaPig.addTrack(remix1);
 		guineaPig.addTrack(remix2);
 		guineaPig.addTrack(acoustic1);
-		assertEquals(4, guineaPig.getTracks().count());
+		assertThat(guineaPig.getTracks().count()).isEqualTo(4);
 	}
 	
 	@Test
 	public final void testAddDuplicateTrack() throws IOException {
+		final TrackFactory trackFactory = guineaPig.getFactories().getTrackFactory();
 		final List<Path> paths = TestResources.getTrackPaths();
 		final Set<Artist> mainArtists = factory.getRandomSetOfArtists();
 		final String title = factory.randomString();
@@ -146,15 +125,15 @@ public class DatabaseTest {
 		
 		expected.setMainArtists(mainArtists);
 		expectedDup.setMainArtists(mainArtists);
-		assertEquals("Both tracks must be equal in order for the test to make sense", expected, expectedDup);
-		assertTrue("Not enought track paths", paths.size() >= 2);
+		assertThat(expectedDup).as("Both tracks must be equal in order for the test to make sense").isEqualTo(expected);
+		assertThat(paths.size() >= 2).as("Not enought track paths").isTrue();
 		output1.write(Files.readAllBytes(paths.get(0)));
 		output1.close();
 		output2.write(Files.readAllBytes(paths.get(1)));
 		output2.close();
 		guineaPig.addTrack(expected);
 		guineaPig.addTrack(expectedDup);
-		assertEquals(1, guineaPig.getTracks().count());
+		assertThat(guineaPig.getTracks().count()).isEqualTo(1);
 	}
 	
 	@Test
@@ -164,7 +143,7 @@ public class DatabaseTest {
 		final Genre actual = guineaPig.getGenres()
 				.withId(expected.getId())
 				.first();
-		assertEquals(expected, actual);
+		assertThat(actual).isEqualTo(expected);
 	}
 	
 	@Test
@@ -179,25 +158,26 @@ public class DatabaseTest {
 		
 		// assertions
 		final Album actual = guineaPig.getAlbums().withId(expected.getId()).first();
-		assertEquals(expected, actual);
+		assertThat(actual).isEqualTo(expected);
 		
 		// stream
-		assertThat(actual.getCover(), is(instanceOf(GridFsBiStream.class)));
+		assertThat(actual.getCover())
+		.isInstanceOf(GridFsBiStream.class);
 		final GridFsBiStream stream = (GridFsBiStream) actual.getCover();
 		
 		// gridfs file
 		final GridFSFile file = stream.getMetadata();
-		assertEquals(expectedContent.length, file.getLength());
+		assertThat(file.getLength()).isEqualTo(expectedContent.length);
 		
 		// readTo
 		final ByteArrayOutputStream arrayOut = new ByteArrayOutputStream(expectedContent.length);
 		stream.readTo(arrayOut);
-		assertArrayEquals(expectedContent, arrayOut.toByteArray());
+		assertThat(arrayOut.toByteArray()).isEqualTo(expectedContent);
 		
 		// toInput
 		final ByteArrayOutputStream actualContent = new ByteArrayOutputStream(expectedContent.length);
 		IOUtils.copy(actual.getCover().toInput(), actualContent);
-		assertArrayEquals(expectedContent, actualContent.toByteArray());
+		assertThat(actualContent.toByteArray()).isEqualTo(expectedContent);
 	}
 	
 	
@@ -210,8 +190,8 @@ public class DatabaseTest {
 		final Artist actual = guineaPig.getArtists()
 				.withId(expected.getId())
 				.first();
-		assertEquals(expected, actual);
-		assertEquals(expected.getGenres(), actual.getGenres());
+		assertThat(actual).isEqualTo(expected);
+		assertThat(actual.getGenres()).isEqualTo(expected.getGenres());
 	}
 
 }

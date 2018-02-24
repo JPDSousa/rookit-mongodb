@@ -23,11 +23,16 @@ package org.rookit.mongodb.queries;
 
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.query.Query;
-import org.rookit.dm.album.Album;
-import org.rookit.dm.artist.Artist;
-import org.rookit.dm.genre.Genre;
-import org.rookit.dm.play.Playlist;
-import org.rookit.dm.track.Track;
+import org.rookit.api.dm.album.Album;
+import org.rookit.api.dm.artist.Artist;
+import org.rookit.api.dm.genre.Genre;
+import org.rookit.api.dm.play.Playlist;
+import org.rookit.api.dm.track.Track;
+import org.rookit.api.storage.queries.AlbumQuery;
+import org.rookit.api.storage.queries.ArtistQuery;
+import org.rookit.api.storage.queries.GenreQuery;
+import org.rookit.api.storage.queries.PlaylistQuery;
+import org.rookit.api.storage.queries.TrackQuery;
 
 @SuppressWarnings("javadoc")
 public class QueryFactory {

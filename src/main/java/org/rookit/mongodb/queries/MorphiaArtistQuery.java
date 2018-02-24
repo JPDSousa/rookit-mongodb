@@ -23,18 +23,19 @@ package org.rookit.mongodb.queries;
 
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.query.Query;
-import org.rookit.dm.artist.Artist;
-import org.rookit.dm.artist.Musician;
-import org.rookit.dm.artist.TypeArtist;
-import org.rookit.dm.artist.TypeGender;
-import org.rookit.dm.artist.TypeGroup;
+import org.rookit.api.dm.artist.Artist;
+import org.rookit.api.dm.artist.Musician;
+import org.rookit.api.dm.artist.TypeArtist;
+import org.rookit.api.dm.artist.TypeGender;
+import org.rookit.api.dm.artist.TypeGroup;
+import org.rookit.api.storage.queries.ArtistQuery;
 
-import static org.rookit.dm.artist.DatabaseFields.*;
+import static org.rookit.api.dm.artist.ArtistFields.*;
 
 import java.time.LocalDate;
 import java.util.regex.Pattern;
 
-class MorphiaArtistQuery extends AbstractGenreableQuery<Artist, ArtistQuery> implements ArtistQuery{
+class MorphiaArtistQuery extends AbstractGenreableQuery<Artist, ArtistQuery> implements ArtistQuery {
 
 	public MorphiaArtistQuery(Datastore datastore, Query<Artist> query) {
 		super(datastore, query);

@@ -21,13 +21,13 @@
  ******************************************************************************/
 package org.rookit.mongodb.queries;
 
-import org.rookit.dm.play.Playlist;
-import org.rookit.dm.track.Track;
-
-import static org.rookit.dm.play.DatabaseFields.*;
+import static org.rookit.api.dm.play.PlaylistFields.*;
 
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.query.Query;
+import org.rookit.api.dm.play.Playlist;
+import org.rookit.api.dm.track.Track;
+import org.rookit.api.storage.queries.PlaylistQuery;
 
 class MorphiaPlaylistQuery extends AbstractPlayableQuery<Playlist, PlaylistQuery> implements PlaylistQuery {
 	

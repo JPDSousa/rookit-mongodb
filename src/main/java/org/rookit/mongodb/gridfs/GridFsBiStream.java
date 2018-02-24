@@ -10,12 +10,15 @@ import java.util.Map;
 import org.bson.BsonObjectId;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Id;
-import org.rookit.dm.RookitModel;
-import org.rookit.dm.utils.bistream.BiStream;
+import org.rookit.api.bistream.BiStream;
+import org.rookit.api.dm.RookitModel;
 
 import com.mongodb.client.gridfs.GridFSBucket;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import com.mongodb.client.model.Filters;
+import com.google.common.base.MoreObjects;
+
+import javax.annotation.Generated;
 
 @SuppressWarnings("javadoc")
 public class GridFsBiStream implements BiStream {
@@ -90,5 +93,14 @@ public class GridFsBiStream implements BiStream {
 	public boolean isEmpty() {
 		return id == null;
 	}
+
+	@Override
+	@Generated(value = "GuavaEclipsePlugin")
+	public String toString() {
+		return MoreObjects.toStringHelper(this).add("super", super.toString()).add("bucket", bucket)
+				.add("bucketName", bucketName).add("id", id).toString();
+	}
+	
+	
 	
 }

@@ -1,7 +1,5 @@
 package org.rookit.mongodb.gridfs;
 
-import java.util.Map;
-
 import org.bson.BsonDocument;
 import org.bson.BsonObjectId;
 import org.bson.BsonString;
@@ -9,21 +7,23 @@ import org.bson.types.ObjectId;
 import org.mongodb.morphia.converters.SimpleValueConverter;
 import org.mongodb.morphia.converters.TypeConverter;
 import org.mongodb.morphia.mapping.MappedField;
-import org.rookit.dm.utils.bistream.BiStream;
+import org.rookit.api.bistream.BiStream;
+import org.rookit.mongodb.utils.DatabaseValidator;
 
 import com.mongodb.DBObject;
-import com.mongodb.client.gridfs.GridFSBucket;
 
 @SuppressWarnings("javadoc")
 public class GridFsBiStreamConverter extends TypeConverter implements SimpleValueConverter {
 
-	public static final GridFsBiStreamConverter create(Map<String, GridFSBucket> bucketCache) {
+	private static final DatabaseValidator VALIDATOR = DatabaseValidator.getDefault();
+	
+	public static final GridFsBiStreamConverter create(Buckets bucketCache) {
 		return new GridFsBiStreamConverter(bucketCache);
 	}
 
-	private Map<String, GridFSBucket> bucketCache;
+	private Buckets bucketCache;
 	
-	private GridFsBiStreamConverter(Map<String, GridFSBucket> bucketCache) {
+	private GridFsBiStreamConverter(Buckets bucketCache) {
 		super(BiStream.class, GridFsBiStream.class);
 		this.bucketCache = bucketCache;
 	}
@@ -54,12 +54,12 @@ public class GridFsBiStreamConverter extends TypeConverter implements SimpleValu
 			final DBObject dbObject = (DBObject) fromDBObject;
 			final ObjectId id = (ObjectId) dbObject.get(GridFsBiStream.ID);
 			final String bucketName = (String) dbObject.get(GridFsBiStream.BUCKET_NAME);
-			return new GridFsBiStream(bucketCache.get(bucketName), id);
+			return new GridFsBiStream(bucketCache.getBucket(bucketName), id);
 		}
 
-		System.out.println("GridFsBiStream converter: " + fromDBObject);
-		throw new IllegalArgumentException("Can't convert to " + BiStream.class.getName() 
+		VALIDATOR.runtimeException("Can't convert to " + BiStream.class.getName() 
 				+ " from " + fromDBObject);
+		return null;
 	}
 
 }

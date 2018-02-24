@@ -5,34 +5,25 @@
 	<parent>
 		<groupId>com.github.JPDSousa</groupId>
 		<artifactId>rookit</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>-SNAPSHOT</version>
 	</parent>
 	<build>
-		<sourceDirectory>src/main/java</sourceDirectory>
-		<testSourceDirectory>src/test/java</testSourceDirectory>
-		<testResources>
-			<testResource>
-				<directory>src/test/resources</directory>
-			</testResource>
-		</testResources>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.20.1</version>
+					<configuration>
+						<parallel>methods</parallel>
+						<threadCount>4</threadCount>
+						<perCoreThreadCount>true</perCoreThreadCount>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 	<dependencies>
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-text</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-collections4</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>${rookit.group}</groupId>
 			<artifactId>rookit-utils</artifactId>
@@ -44,30 +35,20 @@
 		<dependency>
 			<groupId>${rookit.group}</groupId>
 			<artifactId>rookit-data-model-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>${rookit.group}</groupId>
+			<artifactId>rookit-mongodb-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>${rookit.group}</groupId>
+			<artifactId>rookit-api</artifactId>
 		</dependency>
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>
-			<dependency>
-				<groupId>commons-io</groupId>
-				<artifactId>commons-io</artifactId>
-				<version>2.5</version>
-			</dependency>
-			<dependency>
-				<groupId>com.google.guava</groupId>
-				<artifactId>guava</artifactId>
-				<version>23.1-jre</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-text</artifactId>
-				<version>1.1</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-collections4</artifactId>
-				<version>4.1</version>
-			</dependency>
 			<dependency>
 				<groupId>${rookit.group}</groupId>
 				<artifactId>rookit-utils</artifactId>
@@ -82,7 +63,25 @@
 				<groupId>${rookit.group}</groupId>
 				<artifactId>rookit-data-model-test</artifactId>
 				<version>${rookit.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>${rookit.group}</groupId>
+				<artifactId>rookit-mongodb-test</artifactId>
+				<version>${rookit.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>${rookit.group}</groupId>
+				<artifactId>rookit-api</artifactId>
+				<version>${rookit.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+	<repositories>
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
+	</repositories>
 </project>

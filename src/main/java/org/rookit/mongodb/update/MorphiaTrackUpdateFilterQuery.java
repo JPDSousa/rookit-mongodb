@@ -4,11 +4,12 @@ import java.util.regex.Pattern;
 
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.query.UpdateOperations;
-import org.rookit.dm.artist.Artist;
-import org.rookit.dm.track.Track;
-import org.rookit.dm.track.audio.TrackKey;
-import org.rookit.dm.track.audio.TrackMode;
-import org.rookit.mongodb.queries.TrackQuery;
+import org.rookit.api.dm.artist.Artist;
+import org.rookit.api.dm.track.Track;
+import org.rookit.api.dm.track.audio.TrackKey;
+import org.rookit.api.dm.track.audio.TrackMode;
+import org.rookit.api.storage.queries.TrackQuery;
+import org.rookit.api.storage.update.TrackUpdateFilterQuery;
 
 import com.google.common.collect.Range;
 
@@ -210,6 +211,12 @@ class MorphiaTrackUpdateFilterQuery extends AbstractGenreableUpdateFilterQuery<T
 	@Override
 	public TrackUpdateFilterQuery withValence(Range<Double> range) {
 		filter.withValence(range);
+		return this;
+	}
+
+	@Override
+	public TrackUpdateFilterQuery withPath(boolean isPathPresent) {
+		filter.withPath(isPathPresent);
 		return this;
 	}
 

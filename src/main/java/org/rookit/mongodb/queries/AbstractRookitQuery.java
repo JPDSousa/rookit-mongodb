@@ -30,9 +30,11 @@ import org.bson.types.ObjectId;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.Sort;
-import org.rookit.dm.RookitModel;
-import org.rookit.mongodb.utils.FieldOrder;
-import org.rookit.mongodb.utils.Order;
+import org.rookit.api.dm.RookitModel;
+import org.rookit.api.storage.queries.RookitQuery;
+import org.rookit.api.storage.utils.FieldOrder;
+import org.rookit.api.storage.utils.Order;
+import org.rookit.mongodb.utils.OrderImpl;
 
 import com.google.common.collect.Lists;
 
@@ -52,11 +54,16 @@ public abstract class AbstractRookitQuery<Q extends RookitQuery<Q, E>, E extends
 		this.datastore = datastore;
 	}
 	
+	@Override
+	public Order newOrder() {
+		return new OrderImpl();
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public Q order(Order order) {
 		final List<Sort> sorts = Lists.newLinkedList();
-		for(FieldOrder field : order.getFields()) {
+		for(final FieldOrder field : order.getFields()) {
 			switch(field.getOrder()) {
 			case ASC:
 				sorts.add(Sort.ascending(field.getField()));

@@ -1,16 +1,21 @@
 package org.rookit.mongodb.update;
 
 import org.mongodb.morphia.query.UpdateOperations;
-import org.rookit.dm.album.Album;
-import org.rookit.dm.artist.Artist;
-import org.rookit.dm.genre.Genre;
-import org.rookit.dm.play.Playlist;
-import org.rookit.dm.track.Track;
-import org.rookit.mongodb.queries.AlbumQuery;
-import org.rookit.mongodb.queries.ArtistQuery;
-import org.rookit.mongodb.queries.GenreQuery;
-import org.rookit.mongodb.queries.PlaylistQuery;
-import org.rookit.mongodb.queries.TrackQuery;
+import org.rookit.api.dm.album.Album;
+import org.rookit.api.dm.artist.Artist;
+import org.rookit.api.dm.genre.Genre;
+import org.rookit.api.dm.play.Playlist;
+import org.rookit.api.dm.track.Track;
+import org.rookit.api.storage.queries.AlbumQuery;
+import org.rookit.api.storage.queries.ArtistQuery;
+import org.rookit.api.storage.queries.GenreQuery;
+import org.rookit.api.storage.queries.PlaylistQuery;
+import org.rookit.api.storage.queries.TrackQuery;
+import org.rookit.api.storage.update.AlbumUpdateQuery;
+import org.rookit.api.storage.update.ArtistUpdateQuery;
+import org.rookit.api.storage.update.GenreUpdateQuery;
+import org.rookit.api.storage.update.PlaylistUpdateQuery;
+import org.rookit.api.storage.update.TrackUpdateQuery;
 
 @SuppressWarnings("javadoc")
 public class UpdateQueryFactory {
@@ -27,23 +32,23 @@ public class UpdateQueryFactory {
 	private UpdateQueryFactory() {}
 	
 	public TrackUpdateQuery newTrackUpdateQuery(UpdateOperations<Track> update, TrackQuery filter) {
-		return new TrackUpdateQueryImpl(update, filter);
+		return new MorphiaTrackUpdateQuery(update, filter);
 	}
 	
 	public AlbumUpdateQuery newAlbumUpdateQuery(UpdateOperations<Album> update, AlbumQuery filter) {
-		return new AlbumUpdateQueryImpl(update, filter);
+		return new MorphiaAlbumUpdateQuery(update, filter);
 	}
 	
 	public ArtistUpdateQuery newArtistUpdateQuery(UpdateOperations<Artist> update, ArtistQuery filter) {
-		return new ArtistUpdateQueryImpl(update, filter);
+		return new MorphiaArtistUpdateQuery(update, filter);
 	}
 	
 	public GenreUpdateQuery newGenreUpdateQuery(UpdateOperations<Genre> update, GenreQuery filter) {
-		return new GenreUpdateQueryImpl(update, filter);
+		return new MorphiaGenreUpdateQuery(update, filter);
 	}
 	
 	public PlaylistUpdateQuery newPlaylistUpdateQuery(UpdateOperations<Playlist> update, PlaylistQuery filter) {
-		return new PlaylistUpdateQueryImpl(update, filter);
+		return new MorphiaPlaylistUpdateQuery(update, filter);
 	}
 
 }

@@ -4,8 +4,9 @@ import java.time.Duration;
 import java.time.LocalDate;
 
 import org.mongodb.morphia.query.UpdateOperations;
-import org.rookit.dm.play.able.Playable;
-import org.rookit.mongodb.queries.PlayableQuery;
+import org.rookit.api.dm.play.able.Playable;
+import org.rookit.api.storage.queries.PlayableQuery;
+import org.rookit.api.storage.update.PlayableUpdateFilterQuery;
 
 abstract class AbstractPlayableUpdateFilterQuery<E extends Playable, Q extends PlayableQuery<E, Q>, U extends PlayableUpdateFilterQuery<U>> 
 	extends AbstractUpdateFilterQuery<E, Q, U> 

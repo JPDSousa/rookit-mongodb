@@ -24,12 +24,13 @@ package org.rookit.mongodb.queries;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.query.Query;
-import org.rookit.dm.genre.Genre;
-import org.rookit.dm.genre.Genreable;
+import org.rookit.api.dm.genre.Genre;
+import org.rookit.api.dm.genre.Genreable;
+import org.rookit.api.storage.queries.GenreableQuery;
 
 import com.google.common.collect.Lists;
 
-import static org.rookit.dm.genre.Genreable.*;
+import static org.rookit.api.dm.genre.Genreable.*;
 
 import java.util.Arrays;
 

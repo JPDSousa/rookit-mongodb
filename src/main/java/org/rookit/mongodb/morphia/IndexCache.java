@@ -9,7 +9,7 @@ import org.bson.conversions.Bson;
 import org.mongodb.morphia.annotations.Field;
 import org.mongodb.morphia.annotations.Index;
 import org.mongodb.morphia.annotations.Indexes;
-import org.rookit.dm.RookitModel;
+import org.rookit.api.dm.RookitModel;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;

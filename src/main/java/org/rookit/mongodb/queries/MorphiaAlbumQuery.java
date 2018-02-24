@@ -23,12 +23,13 @@ package org.rookit.mongodb.queries;
 
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.query.Query;
-import org.rookit.dm.album.Album;
-import org.rookit.dm.album.TypeAlbum;
-import org.rookit.dm.album.TypeRelease;
-import org.rookit.dm.artist.Artist;
+import org.rookit.api.dm.album.Album;
+import org.rookit.api.dm.album.TypeAlbum;
+import org.rookit.api.dm.album.TypeRelease;
+import org.rookit.api.dm.artist.Artist;
+import org.rookit.api.storage.queries.AlbumQuery;
 
-import static org.rookit.dm.album.DatabaseFields.*;
+import static org.rookit.api.dm.album.AlbumFields.*;
 
 import java.time.LocalDate;
 import java.util.Arrays;

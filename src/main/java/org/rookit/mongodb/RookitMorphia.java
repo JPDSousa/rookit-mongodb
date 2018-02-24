@@ -22,7 +22,6 @@
 package org.rookit.mongodb;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -35,74 +34,98 @@ import org.mongodb.morphia.mapping.Mapper;
 import org.mongodb.morphia.mapping.MapperOptions;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;
-import org.rookit.dm.RookitModel;
-import org.rookit.dm.album.Album;
-import org.rookit.dm.album.AlbumFactory;
-import org.rookit.dm.album.TrackSlot;
-import org.rookit.dm.artist.Artist;
-import org.rookit.dm.artist.ArtistFactory;
-import org.rookit.dm.genre.Genre;
-import org.rookit.dm.parser.IgnoreField;
-import org.rookit.dm.parser.TrackFormat;
-import org.rookit.dm.play.Playlist;
-import org.rookit.dm.play.PlaylistFactory;
-import org.rookit.dm.play.StaticPlaylist;
-import org.rookit.dm.track.Track;
-import org.rookit.dm.track.TrackFactory;
-import org.rookit.dm.track.VersionTrack;
+import org.rookit.api.dm.RookitModel;
+import org.rookit.api.dm.album.Album;
+import org.rookit.api.dm.album.TrackSlot;
+import org.rookit.api.dm.artist.Artist;
+import org.rookit.api.dm.factory.RookitFactories;
+import org.rookit.api.dm.genre.Genre;
+import org.rookit.api.dm.parser.IgnoredField;
+import org.rookit.api.dm.parser.TrackFormat;
+import org.rookit.dm.parser.IgnoredFieldImpl;
+import org.rookit.dm.parser.TrackFormatImpl;
+import org.rookit.api.dm.play.Playlist;
+import org.rookit.api.dm.play.StaticPlaylist;
+import org.rookit.api.dm.track.Track;
+import org.rookit.api.dm.track.VersionTrack;
+import org.rookit.api.storage.DBManager;
+import org.rookit.api.storage.queries.AlbumQuery;
+import org.rookit.api.storage.queries.ArtistQuery;
+import org.rookit.api.storage.queries.GenreQuery;
+import org.rookit.api.storage.queries.PlaylistQuery;
+import org.rookit.api.storage.queries.TrackQuery;
+import org.rookit.api.storage.update.AlbumUpdateQuery;
+import org.rookit.api.storage.update.ArtistUpdateQuery;
+import org.rookit.api.storage.update.GenreUpdateQuery;
+import org.rookit.api.storage.update.PlaylistUpdateQuery;
+import org.rookit.api.storage.update.TrackUpdateQuery;
+import org.rookit.api.storage.utils.Order;
+import org.rookit.mongodb.gridfs.Buckets;
 import org.rookit.mongodb.gridfs.GridFsBiStreamConverter;
-import org.rookit.mongodb.gridfs.GridFsBiStreamFactory;
 import org.rookit.mongodb.morphia.DurationConverter;
 import org.rookit.mongodb.morphia.IndexCache;
-import org.rookit.mongodb.queries.AlbumQuery;
-import org.rookit.mongodb.queries.ArtistQuery;
-import org.rookit.mongodb.queries.GenreQuery;
-import org.rookit.mongodb.queries.PlaylistQuery;
 import org.rookit.mongodb.queries.QueryFactory;
-import org.rookit.mongodb.queries.TrackQuery;
-import org.rookit.mongodb.update.AlbumUpdateQuery;
-import org.rookit.mongodb.update.ArtistUpdateQuery;
-import org.rookit.mongodb.update.GenreUpdateQuery;
-import org.rookit.mongodb.update.PlaylistUpdateQuery;
-import org.rookit.mongodb.update.TrackUpdateQuery;
 import org.rookit.mongodb.update.UpdateQueryFactory;
+import org.rookit.mongodb.utils.DatabaseValidator;
+import org.rookit.mongodb.utils.OrderImpl;
 
-import com.google.common.collect.Maps;
+import com.google.inject.Inject;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.gridfs.GridFSBucket;
-import com.mongodb.client.gridfs.GridFSBuckets;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
 
-class RookitMorphia implements DBManager {
+@SuppressWarnings("javadoc")
+public class RookitMorphia implements DBManager {
+	
+	private static final DatabaseValidator VALIDATOR = DatabaseValidator.getDefault();
 
+	// Morphia
 	private final Morphia morphia;
 	private final Datastore datastore;
+	// MongoDB
 	private final MongoClient client;
 	private final MongoDatabase rawDb;
-	private final Mapper mapper;
+	
 	private final IndexCache indexCache;
-	private boolean isInit;
 	
 	private final QueryFactory queryFactory;
 	private final UpdateQueryFactory updateFactory;
+	
+	private final RookitFactories dmFactories;
 
-	RookitMorphia(String host, int port, String databaseName) {
+	@Inject
+	RookitMorphia(final RookitFactories dmFactories,
+			final MongoClient mongoClient,
+			final MongoDatabase database,
+			final Buckets bucketCache) {
 		indexCache = new IndexCache();
-		client = new MongoClient(host, port);
+		
+		this.client = mongoClient;
+		this.rawDb = database;
+		
 		this.morphia = new Morphia();
-		this.mapper = morphia.getMapper();
-		this.datastore = morphia.createDatastore(client, databaseName);
-		this.rawDb = client.getDatabase(databaseName);
+		this.datastore = morphia.createDatastore(client, database.getName());
+		
 		this.queryFactory = QueryFactory.create(datastore);
 		this.updateFactory = UpdateQueryFactory.getDefault();
-		init();
+		this.dmFactories = dmFactories;
+		
+		final Mapper mapper = morphia.getMapper();
+		final MapperOptions options = mapper.getOptions();
+		final Converters converters = mapper.getConverters();
+		options.setMapSubPackages(true);
+		morphia.mapPackage(RookitModel.class.getPackage().getName());
+		converters.addConverter(GridFsBiStreamConverter.create(bucketCache));
+		converters.addConverter(DurationConverter.getDefault());
+		
+		datastore.ensureIndexes();
 	}
 	
 	@SuppressWarnings("unchecked")
 	private void save(RookitModel element) {
+		final Mapper mapper = morphia.getMapper();
 		final MongoCollection<Document> collection = rawDb.getCollection(
 				mapper.getCollectionName(element));
 		final Document update = new Document(morphia.toDBObject(element).toMap());
@@ -195,16 +218,16 @@ class RookitMorphia implements DBManager {
 
 	@Override
 	public int getIgnoredOccurrences(String value) {
-		final IgnoreField result = datastore.find(IgnoreField.class)
-				.field(IgnoreField.VALUE).equal(value.toLowerCase())
+		final IgnoredFieldImpl result = datastore.find(IgnoredFieldImpl.class)
+				.field(IgnoredFieldImpl.VALUE).equal(value.toLowerCase())
 				.get();
 		return result == null ? 0 : result.getOccurrences();
 	}
 
 	@Override
 	public int getTrackFormatOccurrences(String value) {
-		final TrackFormat result = datastore.find(TrackFormat.class)
-				.field(TrackFormat.VALUE).equal(value.toLowerCase())
+		final TrackFormatImpl result = datastore.find(TrackFormatImpl.class)
+				.field(TrackFormatImpl.VALUE).equal(value.toLowerCase())
 				.get();
 		return result == null ? 0 : result.getOccurrences();
 	}
@@ -215,58 +238,22 @@ class RookitMorphia implements DBManager {
 	}
 
 	@Override
-	public synchronized void init() {
-		if(!isInit) {
-			Map<String, GridFSBucket> bucketCache;
-			isInit = true;
-			bucketCache = createBuckets();
-			initFactories(bucketCache);
-			initMorphia(bucketCache);
-			datastore.ensureIndexes();
-		}
-	}
-
-	private Map<String, GridFSBucket> createBuckets() {
-		final Map<String, GridFSBucket> buckets = Maps.newHashMap();
-		buckets.put(AUDIO_BUCKET, GridFSBuckets.create(rawDb, AUDIO_BUCKET));
-		buckets.put(COVER_BUCKET, GridFSBuckets.create(rawDb, COVER_BUCKET));
-		buckets.put(PICTURE_BUCKET, GridFSBuckets.create(rawDb, PICTURE_BUCKET));
-		return buckets;
-	}
-
-	private void initFactories(Map<String, GridFSBucket> bucketCache) {
-		ArtistFactory.getDefault().setBiStreamFactory(
-				GridFsBiStreamFactory.create(bucketCache, PICTURE_BUCKET));
-		AlbumFactory.getDefault().setBiStreamFactory(
-				GridFsBiStreamFactory.create(bucketCache, COVER_BUCKET));
-		TrackFactory.getDefault().setBiStreamFactory(
-				GridFsBiStreamFactory.create(bucketCache, AUDIO_BUCKET));
-		PlaylistFactory.getDefault().setBiStreamFactory(
-				GridFsBiStreamFactory.create(bucketCache, PICTURE_BUCKET));
-	}
-
-	private void initMorphia(Map<String, GridFSBucket> bucketCache) {
-		final Mapper mapper = morphia.getMapper();
-		final MapperOptions options = mapper.getOptions();
-		final Converters converters = mapper.getConverters();
-		options.setMapSubPackages(true);
-		morphia.mapPackage(RookitModel.class.getPackage().getName());
-		converters.addConverter(GridFsBiStreamConverter.create(bucketCache));
-		converters.addConverter(DurationConverter.getDefault());
+	public void init() {
+		VALIDATOR.info("Initializing database module");
 	}
 
 	@Override
-	public void reset() {
+	public synchronized void reset() {
 		clear();
 		init();
 	}
 
 	@Override
 	public Stream<String> streamTrackFormats() {
-		return StreamSupport.stream(datastore.find(TrackFormat.class)
+		return StreamSupport.stream(datastore.find(TrackFormatImpl.class)
 				.fetch()
 				.spliterator(), false)
-				.map(TrackFormat::getValue);
+				.map(TrackFormatImpl::getValue);
 	}
 
 	@Override
@@ -295,20 +282,20 @@ class RookitMorphia implements DBManager {
 	}
 
 	@Override
-	public void updateIgnored(IgnoreField value) {
-		final UpdateOperations<IgnoreField> update = datastore.createUpdateOperations(IgnoreField.class)
-				.inc(IgnoreField.OCCURRENCES, value.getOccurrences());
-		final Query<IgnoreField> query = datastore.find(IgnoreField.class)
-				.field(IgnoreField.VALUE).equal(value.getValue());
+	public void updateIgnored(IgnoredField value) {
+		final UpdateOperations<IgnoredFieldImpl> update = datastore.createUpdateOperations(IgnoredFieldImpl.class)
+				.inc(IgnoredFieldImpl.OCCURRENCES, value.getOccurrences());
+		final Query<IgnoredFieldImpl> query = datastore.find(IgnoredFieldImpl.class)
+				.field(IgnoredFieldImpl.VALUE).equal(value.getValue());
 		datastore.update(query, update);
 	}
 
 	@Override
 	public void updateTrackFormat(TrackFormat value) {
-		final UpdateOperations<TrackFormat> update = datastore.createUpdateOperations(TrackFormat.class)
-				.inc(TrackFormat.OCCURRENCES, value.getOccurrences());
-		final Query<TrackFormat> query = datastore.find(TrackFormat.class)
-				.field(TrackFormat.VALUE).equal(value.getValue());
+		final UpdateOperations<TrackFormatImpl> update = datastore.createUpdateOperations(TrackFormatImpl.class)
+				.inc(TrackFormatImpl.OCCURRENCES, value.getOccurrences());
+		final Query<TrackFormatImpl> query = datastore.find(TrackFormatImpl.class)
+				.field(TrackFormatImpl.VALUE).equal(value.getValue());
 		datastore.update(query, update);
 	}
 
@@ -340,6 +327,16 @@ class RookitMorphia implements DBManager {
 	public PlaylistUpdateQuery updatePlaylist() {
 		final UpdateOperations<Playlist> update = datastore.createUpdateOperations(Playlist.class);
 		return updateFactory.newPlaylistUpdateQuery(update, getPlaylists());
+	}
+
+	@Override
+	public RookitFactories getFactories() {
+		return dmFactories;
+	}
+
+	@Override
+	public Order newOrder() {
+		return new OrderImpl();
 	}
 
 }
