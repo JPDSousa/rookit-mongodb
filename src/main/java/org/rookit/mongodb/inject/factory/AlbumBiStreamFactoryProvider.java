@@ -7,7 +7,7 @@ import com.google.inject.Inject;
 class AlbumBiStreamFactoryProvider extends AbstractBiStreamFactoryProvider {
 
 	@Inject
-	private AlbumBiStreamFactoryProvider(Buckets buckets) {
+	private AlbumBiStreamFactoryProvider(final Buckets buckets) {
 		super(buckets);
 	}
 

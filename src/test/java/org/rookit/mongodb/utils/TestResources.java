@@ -25,25 +25,17 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Properties;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-import org.rookit.api.storage.DBManager;
-import org.rookit.dm.test.DMTestFactory;
-import org.rookit.mongodb.DatabaseConfig;
-import org.rookit.mongodb.RookitMorphia;
-import org.rookit.mongodb.gridfs.Buckets;
 import org.rookit.mongodb.inject.factory.MorphiaFactoriesModule;
-import org.rookit.mongodb.inject.morphia.MongoClientProvider;
-import org.rookit.mongodb.test.inject.MongoDatabaseProvider;
+import org.rookit.mongodb.inject.morphia.MorphiaModule;
+import org.rookit.mongodb.test.inject.MongoDBTestModule;
 import org.rookit.utils.resource.Resources;
 
-import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.mongodb.MongoClient;
-import com.mongodb.client.MongoDatabase;
+import com.google.inject.util.Modules;
 
 @SuppressWarnings("javadoc")
 public class TestResources {
@@ -52,12 +44,8 @@ public class TestResources {
 	public static final Path TRACKS = Resources.RESOURCES_TEST.resolve("tracks");
 	
 	private static final Injector INJECTOR = Guice.createInjector(
-			DMTestFactory.getModule(),
-			new TestModule(), 
+			Modules.override(new MorphiaModule()).with(new MongoDBTestModule()),
 			new MorphiaFactoriesModule());
-	
-	private static final String HOST = "localhost";
-	private static final int PORT = 27020;
 	
 	public static Injector getInjector() {
 		return INJECTOR;
@@ -87,25 +75,6 @@ public class TestResources {
 		return Files.list(COVERS)
 				.collect(Collectors.collectingAndThen(Collectors.toList(), 
 						collected -> collected.get(random.nextInt(collected.size()))));
-	}
-	
-	private static class TestModule extends AbstractModule {
-
-		@Override
-		protected void configure() {
-			final DatabaseConfig config = new DatabaseConfig();
-			final Properties props = new Properties();
-			props.put(DatabaseConfig.HOST, HOST);
-			props.put(DatabaseConfig.PORT, Integer.toString(PORT));
-			config.setOptions(props);
-			
-			bind(DatabaseConfig.class).toInstance(config);
-			bind(MongoClient.class).toProvider(MongoClientProvider.class);
-			bind(MongoDatabase.class).toProvider(MongoDatabaseProvider.class);
-			bind(Buckets.class);
-			bind(DBManager.class).to(RookitMorphia.class);
-		}
-		
 	}
 
 }

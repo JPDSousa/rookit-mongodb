@@ -92,7 +92,7 @@ class MorphiaTrackUpdateQuery extends AbstractGenreableUpdateQuery<Track, TrackQ
 	}
 
 	@Override
-	public TrackUpdateQuery setExplicit(Boolean explicit) {
+	public TrackUpdateQuery setExplicit(boolean explicit) {
 		query.set(EXPLICIT, explicit);
 		return this;
 	}
@@ -110,19 +110,19 @@ class MorphiaTrackUpdateQuery extends AbstractGenreableUpdateQuery<Track, TrackQ
 	}
 
 	@Override
-	public TrackUpdateQuery setInstrumental(Boolean isInstrumental) {
+	public TrackUpdateQuery setInstrumental(boolean isInstrumental) {
 		query.set(INSTRUMENTAL, isInstrumental);
 		return this;
 	}
 
 	@Override
-	public TrackUpdateQuery setLive(Boolean isLive) {
+	public TrackUpdateQuery setLive(boolean isLive) {
 		query.set(LIVE, isLive);
 		return this;
 	}
 
 	@Override
-	public TrackUpdateQuery setAcoustic(Boolean isAcoustic) {
+	public TrackUpdateQuery setAcoustic(boolean isAcoustic) {
 		query.set(ACOUSTIC, isAcoustic);
 		return this;
 	}

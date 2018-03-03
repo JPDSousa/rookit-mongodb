@@ -1,5 +1,7 @@
 package org.rookit.mongodb.morphia;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -17,7 +19,7 @@ import com.google.common.collect.Multimap;
 import com.mongodb.client.model.Filters;
 
 @SuppressWarnings("javadoc")
-public class IndexCache {
+public class IndexCache implements Closeable {
 
 	private final Multimap<Class<?>, Index> indices;
 	
@@ -25,7 +27,7 @@ public class IndexCache {
 		this.indices = HashMultimap.create();
 	}
 
-	public Bson createUniqueQuery(Class<?> clazz, Document dbObject) {
+	public Bson createUniqueQuery(final Class<?> clazz, final Document dbObject) {
 		final Collection<Index> indices = putIfAbsent(clazz);
 		final List<Bson> filters = Lists.newLinkedList();
 		filters.add(Filters.eq(RookitModel.ID, dbObject.get(RookitModel.ID)));
@@ -46,7 +48,7 @@ public class IndexCache {
 		return Filters.and(filters);
 	}
 
-	private Collection<Index> putIfAbsent(Class<?> clazz) {
+	private Collection<Index> putIfAbsent(final Class<?> clazz) {
 		if(indices.containsKey(clazz)) {
 			return indices.get(clazz);
 		}
@@ -68,5 +70,13 @@ public class IndexCache {
 		return indexes;
 	}
 	
+	public void clear() {
+		indices.clear();
+	}
+
+	@Override
+	public void close() throws IOException {
+		clear();
+	}
 	
 }

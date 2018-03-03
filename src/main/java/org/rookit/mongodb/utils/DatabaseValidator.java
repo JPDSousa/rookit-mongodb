@@ -21,7 +21,9 @@
  ******************************************************************************/
 package org.rookit.mongodb.utils;
 
-import org.rookit.utils.log.Logs;
+import org.rookit.mongodb.RookitMorphia;
+import org.rookit.utils.log.AbstractLogCategory;
+import org.rookit.utils.log.LogManager;
 import org.rookit.utils.log.Validator;
 
 @SuppressWarnings("javadoc")
@@ -34,7 +36,18 @@ public class DatabaseValidator extends Validator {
 	}
 
 	private DatabaseValidator() {
-		super(Logs.DATABASE);
+		super(LogManager.create(new AbstractLogCategory() {
+			
+			@Override
+			public Package getPackage() {
+				return RookitMorphia.class.getPackage();
+			}
+			
+			@Override
+			public String getName() {
+				return "RookitMongo";
+			}
+		}));
 	}
 
 }

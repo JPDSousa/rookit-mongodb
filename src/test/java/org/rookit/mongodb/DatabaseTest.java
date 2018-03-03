@@ -22,6 +22,7 @@
 package org.rookit.mongodb;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -32,6 +33,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.rookit.api.bistream.BiStream;
@@ -43,16 +45,33 @@ import org.rookit.api.dm.track.Track;
 import org.rookit.api.dm.track.TypeVersion;
 import org.rookit.api.dm.track.VersionTrack;
 import org.rookit.api.dm.track.factory.TrackFactory;
+import org.rookit.api.storage.DBManager;
+import org.rookit.dm.test.DMTestFactory;
 import org.rookit.mongodb.gridfs.GridFsBiStream;
-import org.rookit.mongodb.queries.AbstractDBManagerTest;
+import org.rookit.mongodb.test.inject.DatabaseDependentTest;
 import org.rookit.mongodb.utils.TestResources;
 
 import com.google.code.tempusfugit.concurrency.ConcurrentTestRunner;
+import com.google.inject.Injector;
 import com.mongodb.client.gridfs.model.GridFSFile;
 
 @SuppressWarnings("javadoc")
 @RunWith(ConcurrentTestRunner.class)
-public class DatabaseTest extends AbstractDBManagerTest {
+public class DatabaseTest extends DatabaseDependentTest<DBManager> {
+	
+	private static final Injector INJECTOR = TestResources.getInjector();
+	
+	private DMTestFactory factory;
+	
+	@Before
+	public final void setGuineaPigAsDatabase() {
+		this.guineaPig = this.database;
+	}
+	
+	@Before
+	public final void createFactory() {
+		factory = INJECTOR.getInstance(DMTestFactory.class);
+	}
 	
 	@Test
 	public final void testAddTrack() throws IOException {
@@ -63,8 +82,8 @@ public class DatabaseTest extends AbstractDBManagerTest {
 		final OutputStream output = dbRef.toOutput();
 		output.write(bytes);
 		output.close();
-		guineaPig.addTrack(expected);
-		final Track actual = guineaPig.getTracks()
+		database.addTrack(expected);
+		final Track actual = database.getTracks()
 				.withId(expected.getId())
 				.first();
 		assertThat(actual).isEqualTo(expected);
@@ -82,8 +101,8 @@ public class DatabaseTest extends AbstractDBManagerTest {
 		final OutputStream output = dbRef.toOutput();
 		output.write(bytes);
 		output.close();
-		guineaPig.addPlaylist(expected);
-		final Playlist actual = guineaPig.getPlaylists()
+		database.addPlaylist(expected);
+		final Playlist actual = database.getPlaylists()
 				.withId(expected.getId())
 				.first();
 		assertThat(actual).isEqualTo(expected);
@@ -94,7 +113,7 @@ public class DatabaseTest extends AbstractDBManagerTest {
 	
 	@Test
 	public final void testAddRemix() {
-		final TrackFactory trackFactory = guineaPig.getFactories().getTrackFactory();
+		final TrackFactory trackFactory = database.getFactories().getTrackFactory();
 		final Track original = trackFactory.createOriginalTrack("I'm original");
 		final VersionTrack remix1 = trackFactory.createVersionTrack(TypeVersion.REMIX, original);
 		final VersionTrack remix2 = trackFactory.createVersionTrack(TypeVersion.REMIX, original);
@@ -103,16 +122,16 @@ public class DatabaseTest extends AbstractDBManagerTest {
 		final Set<Artist> remixA2 = factory.getRandomUniqueSetOfArtists(remixA1);
 		remix1.setVersionArtists(remixA1);
 		remix2.setVersionArtists(remixA2);
-		guineaPig.addTrack(original);
-		guineaPig.addTrack(remix1);
-		guineaPig.addTrack(remix2);
-		guineaPig.addTrack(acoustic1);
-		assertThat(guineaPig.getTracks().count()).isEqualTo(4);
+		database.addTrack(original);
+		database.addTrack(remix1);
+		database.addTrack(remix2);
+		database.addTrack(acoustic1);
+		assertThat(database.getTracks().count()).isEqualTo(4);
 	}
 	
 	@Test
 	public final void testAddDuplicateTrack() throws IOException {
-		final TrackFactory trackFactory = guineaPig.getFactories().getTrackFactory();
+		final TrackFactory trackFactory = database.getFactories().getTrackFactory();
 		final List<Path> paths = TestResources.getTrackPaths();
 		final Set<Artist> mainArtists = factory.getRandomSetOfArtists();
 		final String title = factory.randomString();
@@ -131,16 +150,16 @@ public class DatabaseTest extends AbstractDBManagerTest {
 		output1.close();
 		output2.write(Files.readAllBytes(paths.get(1)));
 		output2.close();
-		guineaPig.addTrack(expected);
-		guineaPig.addTrack(expectedDup);
-		assertThat(guineaPig.getTracks().count()).isEqualTo(1);
+		database.addTrack(expected);
+		database.addTrack(expectedDup);
+		assertThat(database.getTracks().count()).isEqualTo(1);
 	}
 	
 	@Test
 	public final void testAddGenre() {
 		final Genre expected = factory.getRandomGenre();
-		guineaPig.addGenre(expected);
-		final Genre actual = guineaPig.getGenres()
+		database.addGenre(expected);
+		final Genre actual = database.getGenres()
 				.withId(expected.getId())
 				.first();
 		assertThat(actual).isEqualTo(expected);
@@ -154,10 +173,10 @@ public class DatabaseTest extends AbstractDBManagerTest {
 		final OutputStream output = expected.getCover().toOutput();
 		output.write(expectedContent);
 		output.close();
-		guineaPig.addAlbum(expected);
+		database.addAlbum(expected);
 		
 		// assertions
-		final Album actual = guineaPig.getAlbums().withId(expected.getId()).first();
+		final Album actual = database.getAlbums().withId(expected.getId()).first();
 		assertThat(actual).isEqualTo(expected);
 		
 		// stream
@@ -186,12 +205,22 @@ public class DatabaseTest extends AbstractDBManagerTest {
 	public final void testAddArtist() {
 		final Artist expected = factory.getRandomArtist();
 		expected.setGenres(factory.getRandomSetOfGenres());
-		guineaPig.addArtist(expected);
-		final Artist actual = guineaPig.getArtists()
+		database.addArtist(expected);
+		final Artist actual = database.getArtists()
 				.withId(expected.getId())
 				.first();
 		assertThat(actual).isEqualTo(expected);
 		assertThat(actual.getGenres()).isEqualTo(expected.getGenres());
+	}
+
+	@Override
+	protected Injector getInjector() {
+		return INJECTOR;
+	}
+
+	@Override
+	protected DBManager createGuineaPig() {
+		return mock(DBManager.class);
 	}
 
 }

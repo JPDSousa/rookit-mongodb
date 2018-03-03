@@ -25,11 +25,14 @@ import java.io.IOException;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
 import org.mongodb.morphia.converters.Converters;
+import org.mongodb.morphia.logging.MorphiaLoggerFactory;
 import org.mongodb.morphia.mapping.Mapper;
 import org.mongodb.morphia.mapping.MapperOptions;
 import org.mongodb.morphia.query.Query;
@@ -62,6 +65,7 @@ import org.rookit.api.storage.update.TrackUpdateQuery;
 import org.rookit.api.storage.utils.Order;
 import org.rookit.mongodb.gridfs.Buckets;
 import org.rookit.mongodb.gridfs.GridFsBiStreamConverter;
+import org.rookit.mongodb.log.RookitMorphiaLoggerFactory;
 import org.rookit.mongodb.morphia.DurationConverter;
 import org.rookit.mongodb.morphia.IndexCache;
 import org.rookit.mongodb.queries.QueryFactory;
@@ -69,6 +73,7 @@ import org.rookit.mongodb.update.UpdateQueryFactory;
 import org.rookit.mongodb.utils.DatabaseValidator;
 import org.rookit.mongodb.utils.OrderImpl;
 
+import com.google.common.io.Closer;
 import com.google.inject.Inject;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
@@ -80,7 +85,14 @@ import com.mongodb.client.model.ReturnDocument;
 public class RookitMorphia implements DBManager {
 	
 	private static final DatabaseValidator VALIDATOR = DatabaseValidator.getDefault();
+	private static final Logger logger = VALIDATOR.getLogger(RookitMorphia.class);
+	
+	static {
+		MorphiaLoggerFactory.registerLogger(RookitMorphiaLoggerFactory.class);
+	}
 
+	private final Closer closer;
+	
 	// Morphia
 	private final Morphia morphia;
 	private final Datastore datastore;
@@ -96,19 +108,24 @@ public class RookitMorphia implements DBManager {
 	private final RookitFactories dmFactories;
 
 	@Inject
-	RookitMorphia(final RookitFactories dmFactories,
+	private RookitMorphia(final RookitFactories dmFactories,
 			final MongoClient mongoClient,
 			final MongoDatabase database,
 			final Buckets bucketCache) {
-		indexCache = new IndexCache();
+		logger.trace("Creating manager");
+		this.closer = Closer.create();
+		
+		this.indexCache = new IndexCache();
+		this.closer.register(this.indexCache);
 		
 		this.client = mongoClient;
+		this.closer.register(this.client);
 		this.rawDb = database;
 		
 		this.morphia = new Morphia();
-		this.datastore = morphia.createDatastore(client, database.getName());
+		this.datastore = this.morphia.createDatastore(this.client, this.rawDb.getName());
 		
-		this.queryFactory = QueryFactory.create(datastore);
+		this.queryFactory = QueryFactory.create(this.datastore);
 		this.updateFactory = UpdateQueryFactory.getDefault();
 		this.dmFactories = dmFactories;
 		
@@ -119,23 +136,27 @@ public class RookitMorphia implements DBManager {
 		morphia.mapPackage(RookitModel.class.getPackage().getName());
 		converters.addConverter(GridFsBiStreamConverter.create(bucketCache));
 		converters.addConverter(DurationConverter.getDefault());
-		
-		datastore.ensureIndexes();
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void save(RookitModel element) {
+	private void save(final RookitModel element) {
 		final Mapper mapper = morphia.getMapper();
+		final String collectionName = mapper.getCollectionName(element);
 		final MongoCollection<Document> collection = rawDb.getCollection(
-				mapper.getCollectionName(element));
+				collectionName);
+		
 		final Document update = new Document(morphia.toDBObject(element).toMap());
 		final Bson query = indexCache.createUniqueQuery(element.getClass(), update);
 		final FindOneAndReplaceOptions options = new FindOneAndReplaceOptions();
 		options.upsert(true);
 		options.returnDocument(ReturnDocument.AFTER);
 		update.remove(RookitModel.ID);
+		
 		final Document result = collection.findOneAndReplace(query, update, options);
-		element.setId(result.getObjectId(RookitModel.ID));
+		final ObjectId id = result.getObjectId(RookitModel.ID);
+		element.setId(id);
+		logger.info("Element {} stored in collection {} with id {}", 
+				element, collectionName, id);
 	}
 
 	@Override
@@ -178,7 +199,7 @@ public class RookitMorphia implements DBManager {
 		track.getFeatures().forEach(this::addArtist);
 		track.getProducers().forEach(this::addArtist);
 		if(track.isVersionTrack()) {
-			final VersionTrack versionTrack = track.getAsVersionTrack();
+			final VersionTrack versionTrack = track.getAsVersionTrack().get();
 			addTrack(versionTrack.getOriginal());
 			versionTrack.getVersionArtists().forEach(this::addArtist);
 		}
@@ -192,7 +213,7 @@ public class RookitMorphia implements DBManager {
 
 	@Override
 	public void close() throws IOException {
-		client.close();
+		closer.close();
 	}
 
 	@Override
@@ -239,7 +260,8 @@ public class RookitMorphia implements DBManager {
 
 	@Override
 	public void init() {
-		VALIDATOR.info("Initializing database module");
+		logger.info("Initializing database module");
+		this.datastore.ensureIndexes();
 	}
 
 	@Override
@@ -337,6 +359,11 @@ public class RookitMorphia implements DBManager {
 	@Override
 	public Order newOrder() {
 		return new OrderImpl();
+	}
+
+	@Override
+	public String getName() {
+		return rawDb.getName();
 	}
 
 }

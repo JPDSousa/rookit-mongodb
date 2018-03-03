@@ -17,36 +17,36 @@ public class GridFsBiStreamConverter extends TypeConverter implements SimpleValu
 
 	private static final DatabaseValidator VALIDATOR = DatabaseValidator.getDefault();
 	
-	public static final GridFsBiStreamConverter create(Buckets bucketCache) {
+	public static final GridFsBiStreamConverter create(final Buckets bucketCache) {
 		return new GridFsBiStreamConverter(bucketCache);
 	}
 
-	private Buckets bucketCache;
+	private final Buckets bucketCache;
 	
-	private GridFsBiStreamConverter(Buckets bucketCache) {
+	private GridFsBiStreamConverter(final Buckets bucketCache) {
 		super(BiStream.class, GridFsBiStream.class);
 		this.bucketCache = bucketCache;
 	}
 
 	@Override
-	public Object encode(Object value, MappedField optionalExtraInfo) {
+	public Object encode(final Object value, final MappedField optionalExtraInfo) {
 		if(value instanceof GridFsBiStream) {
 			final GridFsBiStream biStream = (GridFsBiStream) value;
-			final ObjectId id = biStream.getId();
-			if(id != null) {
-				return new BsonDocument(GridFsBiStream.ID, new BsonObjectId(biStream.getId()))
-						.append(GridFsBiStream.BUCKET_NAME, new BsonString(biStream.getBucketName()));
-			}
-			return null;
+			return biStream.getId()
+					.transform(BsonObjectId::new)
+					.transform(this::createDocument)
+					.transform(doc -> doc.append(GridFsBiStream.BUCKET_NAME, new BsonString(biStream.getBucketName())))
+					.orNull();
 		}
 		throw new IllegalArgumentException("Can't encode " + value);
+	}
+	
+	private BsonDocument createDocument(final BsonObjectId id) {
+		return new BsonDocument(GridFsBiStream.ID, id);
 	}
 
 	@Override
 	public Object decode(Class<?> targetClass, Object fromDBObject, MappedField optionalExtraInfo) {
-		if(fromDBObject == null) {
-			return null;
-		}
 		if(fromDBObject instanceof GridFsBiStream) {
 			return fromDBObject;
 		}
@@ -57,9 +57,8 @@ public class GridFsBiStreamConverter extends TypeConverter implements SimpleValu
 			return new GridFsBiStream(bucketCache.getBucket(bucketName), id);
 		}
 
-		VALIDATOR.runtimeException("Can't convert to " + BiStream.class.getName() 
+		return VALIDATOR.runtimeException("Can't convert to " + BiStream.class.getName() 
 				+ " from " + fromDBObject);
-		return null;
 	}
 
 }
